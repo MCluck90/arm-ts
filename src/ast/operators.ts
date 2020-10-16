@@ -79,3 +79,13 @@ export class Divide implements AST {
     );
   }
 }
+
+export interface InfixOperatorConstructor {
+  new (left: AST, right: AST):
+    | Equal
+    | NotEqual
+    | Add
+    | Subtract
+    | Multiply
+    | Divide;
+}
