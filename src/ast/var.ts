@@ -1,9 +1,9 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class Var implements AST {
-  constructor(public name: string, public value: AST) {}
+export class Var implements Equality {
+  constructor(public name: string, public value: Equality) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return (
       other instanceof Var &&
       other.name === this.name &&

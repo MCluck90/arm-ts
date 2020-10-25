@@ -1,9 +1,9 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class Call implements AST {
-  constructor(public callee: string, public args: AST[]) {}
+export class Call implements Equality {
+  constructor(public callee: string, public args: Equality[]) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return (
       other instanceof Call &&
       this.callee === other.callee &&

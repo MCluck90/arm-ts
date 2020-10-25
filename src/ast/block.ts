@@ -1,9 +1,9 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class Block implements AST {
-  constructor(public statements: AST[]) {}
+export class Block implements Equality {
+  constructor(public statements: Equality[]) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return (
       other instanceof Block &&
       other.statements.length === this.statements.length &&

@@ -1,13 +1,13 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class Function implements AST {
+export class Function implements Equality {
   constructor(
     public name: string,
     public parameters: string[],
-    public body: AST
+    public body: Equality
   ) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return (
       other instanceof Function &&
       other.name === this.name &&

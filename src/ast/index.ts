@@ -1,5 +1,4 @@
 export * from './assign';
-export * from './ast';
 export * from './block';
 export * from './call';
 export * from './function';

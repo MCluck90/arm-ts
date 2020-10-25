@@ -1,9 +1,9 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class While implements AST {
-  constructor(public conditional: AST, public body: AST) {}
+export class While implements Equality {
+  constructor(public conditional: Equality, public body: Equality) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return (
       other instanceof While &&
       this.conditional.equals(other.conditional) &&

@@ -1,7 +1,6 @@
 import {
   Add,
   Assign,
-  AST,
   Block,
   Call,
   Divide,
@@ -19,6 +18,7 @@ import {
   Var,
   While,
 } from './ast';
+import { Equality } from './types';
 
 export class Source {
   constructor(public string: string, public index: number) {}
@@ -166,7 +166,7 @@ export const STAR = token(/[*]/y).map((_) => Multiply);
 export const SLASH = token(/[/]/y).map((_) => Divide);
 export const ASSIGN = token(/=/y).map((_) => Assign);
 
-export const expression: Parser<AST> = Parser.error(
+export const expression: Parser<Equality> = Parser.error(
   'expression parser used before definition'
 );
 
@@ -193,7 +193,7 @@ export const unary = maybe(NOT).bind((not) =>
 
 const infix = (
   operatorParser: Parser<InfixOperatorConstructor>,
-  termParser: Parser<AST>
+  termParser: Parser<Equality>
 ) =>
   termParser.bind((term) =>
     zeroOrMore(
@@ -214,7 +214,7 @@ export const comparision = infix(EQUAL.or(NOT_EQUAL), sum);
 
 expression.parse = comparision.parse;
 
-export const statement: Parser<AST> = Parser.error(
+export const statement: Parser<Equality> = Parser.error(
   'statement parser used before definition'
 );
 

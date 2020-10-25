@@ -1,9 +1,9 @@
-import { AST } from './ast';
+import { Equality } from '../types';
 
-export class Integer implements AST {
+export class Integer implements Equality {
   constructor(public value: number) {}
 
-  equals(other: AST): boolean {
+  equals(other: Equality): boolean {
     return other instanceof Integer && other.value === this.value;
   }
 }
