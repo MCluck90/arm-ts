@@ -1,0 +1,9 @@
+#!/bin/sh
+# Will compile and execute ARM assembly
+# Run in WSL
+
+npm run --silent integration > __program.s
+arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out
+qemu-arm ./__out
+rm ./__out
+rm ./__program.s

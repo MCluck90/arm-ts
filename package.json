@@ -6,6 +6,7 @@
     "start": "ts-node src/main.ts",
     "format": "prettier --write src/**",
     "dev": "jest --watch",
+    "integration": "ts-node tests/integration-tests.ts",
     "test": "jest"
   },
   "keywords": [],
