@@ -4,7 +4,7 @@ export class Block implements AST {
   constructor(public statements: AST[]) {}
 
   emit() {
-    throw new Error('Not yet implemented');
+    this.statements.forEach((statement) => statement.emit());
   }
 
   equals(other: AST): boolean {

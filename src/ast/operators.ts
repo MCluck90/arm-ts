@@ -1,10 +1,14 @@
+import { emit } from '../emit';
 import { AST } from '../types';
 
 export class Not implements AST {
   constructor(public term: AST) {}
 
   emit() {
-    throw new Error('Not yet implemented');
+    this.term.emit();
+    emit(`  cmp r0, #0`);
+    emit(`  moveq r0, #1`);
+    emit(`  movne r0, #0`);
   }
 
   equals(other: AST): boolean {

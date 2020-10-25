@@ -1,4 +1,11 @@
-import { Main } from './ast';
+import { parser } from './parser';
 
-// Test out emitting `main` code
-new Main([]).emit();
+parser
+  .parseStringToCompletion(
+    `
+function main() {
+  assert(1);
+  assert(!0);
+}`
+  )
+  .emit();
