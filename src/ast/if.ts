@@ -8,7 +8,7 @@ export class If implements AST {
   ) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

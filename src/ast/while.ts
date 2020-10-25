@@ -4,7 +4,7 @@ export class While implements AST {
   constructor(public conditional: AST, public body: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

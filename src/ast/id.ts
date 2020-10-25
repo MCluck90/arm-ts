@@ -4,7 +4,7 @@ export class Id implements AST {
   constructor(public value: string) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

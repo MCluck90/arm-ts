@@ -4,7 +4,7 @@ export class Call implements AST {
   constructor(public callee: string, public args: AST[]) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

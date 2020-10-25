@@ -4,7 +4,7 @@ export class Return implements AST {
   constructor(public term: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

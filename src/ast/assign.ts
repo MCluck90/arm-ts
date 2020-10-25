@@ -4,7 +4,7 @@ export class Assign implements AST {
   constructor(public name: string, public value: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

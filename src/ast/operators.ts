@@ -4,7 +4,7 @@ export class Not implements AST {
   constructor(public term: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -16,7 +16,7 @@ export class Equal implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -32,7 +32,7 @@ export class NotEqual implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -48,7 +48,7 @@ export class Add implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -64,7 +64,7 @@ export class Subtract implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -80,7 +80,7 @@ export class Multiply implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
@@ -96,7 +96,7 @@ export class Divide implements AST {
   constructor(public left: AST, public right: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {

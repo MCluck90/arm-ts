@@ -4,7 +4,7 @@ export class Assert implements AST {
   constructor(public condition: AST) {}
 
   emit() {
-    // TODO
+    throw new Error('Not yet implemented');
   }
 
   equals(other: AST): boolean {
