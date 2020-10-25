@@ -1,0 +1,6 @@
+#!/bin/sh
+# Will compile and execute ARM assembly
+# Run in WSL
+arm-linux-gnueabihf-gcc -static $1 -o __out
+qemu-arm ./__out
+rm ./__out
