@@ -13,7 +13,7 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Number,
+  Integer,
   Return,
   Subtract,
   Var,
@@ -119,6 +119,7 @@ export class Parser<T> {
 
     const index = result.source.index;
     if (index !== result.source.string.length) {
+      console.log(result);
       throw new Error(`Parse error at index ${index}`);
     }
 
@@ -132,7 +133,7 @@ export const whitespace = regexp(/[ \n\r\t]+/y);
 export const comments = regexp(/[/][/].*/y).or(regexp(/[/][*].*[*][/]/sy));
 export const ignored = zeroOrMore(whitespace.or(comments));
 
-export const token = (pattern: RegExp) =>
+const token = (pattern: RegExp) =>
   regexp(pattern).bind((value) => ignored.and(constant(value)));
 
 export const FUNCTION = token(/function\b/y);
@@ -142,15 +143,15 @@ export const RETURN = token(/return\b/y);
 export const VAR = token(/var\b/y);
 export const WHILE = token(/while\b/y);
 
-export const COMMA = token(/[,]\b/y);
-export const SEMICOLON = token(/;\b/y);
-export const LEFT_PAREN = token(/[(]\b/y);
-export const RIGHT_PAREN = token(/[)]\b/y);
-export const LEFT_BRACE = token(/[{]\b/y);
-export const RIGHT_BRACE = token(/[}]\b/y);
+export const COMMA = token(/[,]/y);
+export const SEMICOLON = token(/;/y);
+export const LEFT_PAREN = token(/[(]/y);
+export const RIGHT_PAREN = token(/[)]/y);
+export const LEFT_BRACE = token(/[{]/y);
+export const RIGHT_BRACE = token(/[}]/y);
 
-export const NUMBER = token(/[0-9]+/y).map(
-  (digits) => new Number(parseInt(digits))
+export const INTEGER = token(/[0-9]+/y).map(
+  (digits) => new Integer(parseInt(digits))
 );
 
 export const ID = token(/[a-zA-Z_][a-zA-Z0-9_]*/y);
@@ -183,7 +184,7 @@ export const call = ID.bind((callee) =>
 
 export const atom = call
   .or(id)
-  .or(NUMBER)
+  .or(INTEGER)
   .or(LEFT_PAREN.and(expression).bind((e) => RIGHT_PAREN.and(constant(e))));
 
 export const unary = maybe(NOT).bind((not) =>
@@ -213,19 +214,19 @@ export const comparision = infix(EQUAL.or(NOT_EQUAL), sum);
 
 expression.parse = comparision.parse;
 
-const statement: Parser<AST> = Parser.error(
+export const statement: Parser<AST> = Parser.error(
   'statement parser used before definition'
 );
 
-const returnStatement = RETURN.and(expression).bind((term) =>
+export const returnStatement = RETURN.and(expression).bind((term) =>
   SEMICOLON.and(constant(new Return(term)))
 );
 
-const expressionStatement = expression.bind((term) =>
+export const expressionStatement = expression.bind((term) =>
   SEMICOLON.and(constant(term))
 );
 
-const ifStatement = IF.and(LEFT_PAREN)
+export const ifStatement = IF.and(LEFT_PAREN)
   .and(expression)
   .bind((conditional) =>
     RIGHT_PAREN.and(statement).bind((consequence) =>
@@ -235,7 +236,7 @@ const ifStatement = IF.and(LEFT_PAREN)
     )
   );
 
-const whileStatement = WHILE.and(LEFT_PAREN)
+export const whileStatement = WHILE.and(LEFT_PAREN)
   .and(expression)
   .bind((conditional) =>
     RIGHT_PAREN.and(statement).bind((body) =>
@@ -243,27 +244,27 @@ const whileStatement = WHILE.and(LEFT_PAREN)
     )
   );
 
-const varStatement = VAR.and(ID).bind((name) =>
+export const varStatement = VAR.and(ID).bind((name) =>
   ASSIGN.and(expression).bind((value) =>
     SEMICOLON.and(constant(new Var(name, value)))
   )
 );
 
-const assignmentStatement = ID.bind((name) =>
+export const assignmentStatement = ID.bind((name) =>
   ASSIGN.and(expression).bind((value) =>
     SEMICOLON.and(constant(new Assign(name, value)))
   )
 );
 
-const blockStatement = LEFT_BRACE.and(
+export const blockStatement = LEFT_BRACE.and(
   zeroOrMore(statement)
 ).bind((statements) => RIGHT_BRACE.and(constant(new Block(statements))));
 
-const parameters = ID.bind((param) =>
+export const parameters = ID.bind((param) =>
   zeroOrMore(COMMA.and(ID)).bind((params) => constant([param, ...params]))
 ).or(constant([] as string[]));
 
-const functionStatement = FUNCTION.and(ID).bind((name) =>
+export const functionStatement = FUNCTION.and(ID).bind((name) =>
   LEFT_PAREN.and(parameters).bind((parameters) =>
     RIGHT_PAREN.and(blockStatement).bind((block) =>
       constant(new Function(name, parameters, block))
@@ -271,7 +272,7 @@ const functionStatement = FUNCTION.and(ID).bind((name) =>
   )
 );
 
-const statementParser = returnStatement
+export const statementParser = returnStatement
   .or(functionStatement)
   .or(ifStatement)
   .or(whileStatement)

@@ -5,7 +5,7 @@ export * from './call';
 export * from './function';
 export * from './id';
 export * from './if';
-export * from './number';
+export * from './integer';
 export * from './operators';
 export * from './return';
 export * from './var';
