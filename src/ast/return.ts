@@ -1,9 +1,13 @@
-import { Equality } from '../types';
+import { AST } from '../types';
 
-export class Return implements Equality {
-  constructor(public term: Equality) {}
+export class Return implements AST {
+  constructor(public term: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return other instanceof Return && other.term.equals(this.term);
   }
 }

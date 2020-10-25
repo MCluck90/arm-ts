@@ -1,9 +1,13 @@
-import { Equality } from '../types';
+import { AST } from '../types';
 
-export class Call implements Equality {
-  constructor(public callee: string, public args: Equality[]) {}
+export class Call implements AST {
+  constructor(public callee: string, public args: AST[]) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Call &&
       this.callee === other.callee &&

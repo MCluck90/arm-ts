@@ -1,17 +1,25 @@
-import { Equality } from '../types';
+import { AST } from '../types';
 
-export class Not implements Equality {
-  constructor(public term: Equality) {}
+export class Not implements AST {
+  constructor(public term: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return other instanceof Not && other.term === this.term;
   }
 }
 
-export class Equal implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class Equal implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Equal &&
       this.left.equals(other.left) &&
@@ -20,10 +28,14 @@ export class Equal implements Equality {
   }
 }
 
-export class NotEqual implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class NotEqual implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof NotEqual &&
       this.left.equals(other.left) &&
@@ -32,10 +44,14 @@ export class NotEqual implements Equality {
   }
 }
 
-export class Add implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class Add implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Add &&
       this.left.equals(other.left) &&
@@ -44,10 +60,14 @@ export class Add implements Equality {
   }
 }
 
-export class Subtract implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class Subtract implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Subtract &&
       this.left.equals(other.left) &&
@@ -56,10 +76,14 @@ export class Subtract implements Equality {
   }
 }
 
-export class Multiply implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class Multiply implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Multiply &&
       this.left.equals(other.left) &&
@@ -68,10 +92,14 @@ export class Multiply implements Equality {
   }
 }
 
-export class Divide implements Equality {
-  constructor(public left: Equality, public right: Equality) {}
+export class Divide implements AST {
+  constructor(public left: AST, public right: AST) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof Divide &&
       this.left.equals(other.left) &&
@@ -81,7 +109,7 @@ export class Divide implements Equality {
 }
 
 export interface InfixOperatorConstructor {
-  new (left: Equality, right: Equality):
+  new (left: AST, right: AST):
     | Equal
     | NotEqual
     | Add

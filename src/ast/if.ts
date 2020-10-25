@@ -1,13 +1,17 @@
-import { Equality } from '../types';
+import { AST } from '../types';
 
-export class If implements Equality {
+export class If implements AST {
   constructor(
-    public conditional: Equality,
-    public consequence: Equality,
-    public alternative: Equality
+    public conditional: AST,
+    public consequence: AST,
+    public alternative: AST
   ) {}
 
-  equals(other: Equality): boolean {
+  emit() {
+    // TODO
+  }
+
+  equals(other: AST): boolean {
     return (
       other instanceof If &&
       this.conditional.equals(other.conditional) &&

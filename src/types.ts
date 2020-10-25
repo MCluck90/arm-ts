@@ -1,3 +1,4 @@
-export interface Equality {
-  equals(other: Equality): boolean;
+export interface AST {
+  emit(): void;
+  equals(other: AST): boolean;
 }

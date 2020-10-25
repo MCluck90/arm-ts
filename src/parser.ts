@@ -17,8 +17,10 @@ import {
   Subtract,
   Var,
   While,
+  Main,
+  Assert,
 } from './ast';
-import { Equality } from './types';
+import { AST } from './types';
 
 export class Source {
   constructor(public string: string, public index: number) {}
@@ -166,7 +168,7 @@ export const STAR = token(/[*]/y).map((_) => Multiply);
 export const SLASH = token(/[/]/y).map((_) => Divide);
 export const ASSIGN = token(/=/y).map((_) => Assign);
 
-export const expression: Parser<Equality> = Parser.error(
+export const expression: Parser<AST> = Parser.error(
   'expression parser used before definition'
 );
 
@@ -178,7 +180,13 @@ export const args = expression
 
 export const call = ID.bind((callee) =>
   LEFT_PAREN.and(
-    args.bind((args) => RIGHT_PAREN.and(constant(new Call(callee, args))))
+    args.bind((args) =>
+      RIGHT_PAREN.and(
+        constant(
+          callee === 'assert' ? new Assert(args[0]) : new Call(callee, args)
+        )
+      )
+    )
   )
 );
 
@@ -193,7 +201,7 @@ export const unary = maybe(NOT).bind((not) =>
 
 const infix = (
   operatorParser: Parser<InfixOperatorConstructor>,
-  termParser: Parser<Equality>
+  termParser: Parser<AST>
 ) =>
   termParser.bind((term) =>
     zeroOrMore(
@@ -214,7 +222,7 @@ export const comparision = infix(EQUAL.or(NOT_EQUAL), sum);
 
 expression.parse = comparision.parse;
 
-export const statement: Parser<Equality> = Parser.error(
+export const statement: Parser<AST> = Parser.error(
   'statement parser used before definition'
 );
 
@@ -267,7 +275,11 @@ export const parameters = ID.bind((param) =>
 export const functionStatement = FUNCTION.and(ID).bind((name) =>
   LEFT_PAREN.and(parameters).bind((parameters) =>
     RIGHT_PAREN.and(blockStatement).bind((block) =>
-      constant(new Function(name, parameters, block))
+      constant(
+        name === 'main'
+          ? new Main(block.statements)
+          : new Function(name, parameters, block)
+      )
     )
   )
 );

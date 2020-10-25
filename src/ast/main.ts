@@ -1,6 +1,6 @@
 import { AST } from '../types';
 
-export class Block implements AST {
+export class Main implements AST {
   constructor(public statements: AST[]) {}
 
   emit() {
@@ -9,8 +9,8 @@ export class Block implements AST {
 
   equals(other: AST): boolean {
     return (
-      other instanceof Block &&
-      other.statements.length === this.statements.length &&
+      other instanceof Main &&
+      this.statements.length === other.statements.length &&
       this.statements.every((statement, i) =>
         statement.equals(other.statements[i])
       )
