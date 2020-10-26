@@ -35,7 +35,9 @@ function main() {
 
   variableDeclarations();
   assignment();
+  whileLoop();
 
+  assert(factorialLoop(5) == 120);
 }
 
 function assert(x) {
@@ -77,6 +79,23 @@ function assignment() {
   assert(b == 2);
   assert(c == 3);
   assert(d == 4);
+}
+
+function whileLoop() {
+  var i = 0;
+  while (i != 3) {
+    i = i + 1;
+  }
+  assert(i == 3);
+}
+
+function factorialLoop(n) {
+  var result = 1;
+  while (n != 1) {
+    result = result * n;
+    n = n - 1;
+  }
+  return result;
 }
 `
   )
