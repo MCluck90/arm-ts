@@ -49,7 +49,7 @@ export class Function implements AST {
     this.parameters.forEach((parameter, i) => {
       locals.set(parameter, 4 * i - 16);
     });
-    return new Environment(locals);
+    return new Environment(locals, -20);
   }
 
   equals(other: AST): boolean {

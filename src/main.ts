@@ -8,4 +8,4 @@ function main() {
   putchar('.');
 }`
   )
-  .emit(new Environment(new Map()));
+  .emit(new Environment());
