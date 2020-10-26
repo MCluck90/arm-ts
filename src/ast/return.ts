@@ -1,10 +1,14 @@
 import { AST } from '../ast';
+import { emit } from '../emit';
+import { Environment } from '../environment';
 
 export class Return implements AST {
   constructor(public term: AST) {}
 
-  emit() {
-    throw new Error('Not yet implemented');
+  emit(env: Environment) {
+    this.term.emit(env);
+    emit(`  mov sp, fp`);
+    emit(`  pop {fp, pc}`);
   }
 
   equals(other: AST): boolean {

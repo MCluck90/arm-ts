@@ -30,6 +30,8 @@ function main() {
   }
 
   assert1234(1, 2, 3, 4);
+
+  assert(factorial(5) == 120);
 }
 
 function assert(x) {
@@ -45,6 +47,14 @@ function assert1234(a, b, c, d) {
   assert(b == 2);
   assert(c == 3);
   assert(d == 4);
+}
+
+function factorial(n) {
+  if (n == 0) {
+    return 1;
+  } else {
+    return n * factorial(n - 1);
+  }
 }
 `
   )
