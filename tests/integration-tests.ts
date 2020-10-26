@@ -13,6 +13,7 @@ function main() {
     assert(1);
   }
   putchar(46);
+  putchar('.');
   assert(rand() != 42);
 }`
   )

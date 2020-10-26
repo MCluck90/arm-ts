@@ -20,6 +20,7 @@ import {
   Main,
   Assert,
 } from './ast';
+import { Character } from './ast/character';
 import { AST } from './types';
 
 export class Source {
@@ -151,9 +152,15 @@ export const LEFT_PAREN = token(/[(]/y);
 export const RIGHT_PAREN = token(/[)]/y);
 export const LEFT_BRACE = token(/[{]/y);
 export const RIGHT_BRACE = token(/[}]/y);
+export const SINGLE_QUOTE = token(/[']/y);
 
 export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
+);
+
+const character = regexp(/[\x20-\x7F]/y);
+export const CHARACTER = SINGLE_QUOTE.and(character).bind((char) =>
+  SINGLE_QUOTE.and(constant(new Character(char)))
 );
 
 export const ID = token(/[a-zA-Z_][a-zA-Z0-9_]*/y);
@@ -176,7 +183,7 @@ export const args = expression
   .bind((arg) =>
     zeroOrMore(COMMA.and(expression)).bind((args) => constant([arg, ...args]))
   )
-  .or(constant([]));
+  .or(constant([] as AST[]));
 
 export const call = ID.bind((callee) =>
   LEFT_PAREN.and(
@@ -193,6 +200,7 @@ export const call = ID.bind((callee) =>
 export const atom = call
   .or(id)
   .or(INTEGER)
+  .or(CHARACTER)
   .or(LEFT_PAREN.and(expression).bind((e) => RIGHT_PAREN.and(constant(e))));
 
 export const unary = maybe(NOT).bind((not) =>

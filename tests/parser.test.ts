@@ -10,7 +10,9 @@ import {
   Subtract,
   Var,
   While,
+  Call,
 } from '../src/ast';
+import { Character } from '../src/ast/character';
 import {
   atom,
   comments,
@@ -106,6 +108,24 @@ test('Can parse factorial function', () => {
         ),
         new Return(new Id('result')),
       ])
+    ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse a character', () => {
+  const source = `
+    function outputChar() {
+      putchar('A');
+    }
+  `;
+  const expected = new Block([
+    new Function(
+      'outputChar',
+      [],
+      new Block([new Call('putchar', [new Character('A')])])
     ),
   ]);
   const result = parser.parseStringToCompletion(source);
