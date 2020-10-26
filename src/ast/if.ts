@@ -1,3 +1,5 @@
+import { emit } from '../emit';
+import { Label } from '../label';
 import { AST } from '../types';
 
 export class If implements AST {
@@ -8,7 +10,16 @@ export class If implements AST {
   ) {}
 
   emit() {
-    throw new Error('Not yet implemented');
+    const ifFalseLabel = new Label();
+    const endIfLabel = new Label();
+    this.conditional.emit();
+    emit(`  cmp r0, #0`);
+    emit(`  beq ${ifFalseLabel}`);
+    this.consequence.emit();
+    emit(`  b ${endIfLabel}`);
+    emit(`${ifFalseLabel}:`);
+    this.alternative.emit();
+    emit(`${endIfLabel}:`);
   }
 
   equals(other: AST): boolean {
