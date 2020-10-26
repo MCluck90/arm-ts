@@ -1,9 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 # Will compile and execute ARM assembly
 # Run in WSL
 
-npm run --silent integration > __program.s &&
-arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
-qemu-arm ./__out &&
-rm ./__out &&
-rm ./__program.s
+if [[ "$OSTYPE" == "msys" ]]; then
+  wsl ./integration
+else
+  npm run --silent integration > __program.s &&
+  arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
+  qemu-arm ./__out &&
+  rm ./__out &&
+  rm ./__program.s
+fi
