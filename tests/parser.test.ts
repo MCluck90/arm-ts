@@ -132,3 +132,23 @@ test('Can parse a character', () => {
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
+
+test('Can chain assignments', () => {
+  const source = `
+    function main() {
+      a = b = c = d;
+    }
+  `;
+  const expected = new Block([
+    new Function(
+      'main',
+      [],
+      new Block([
+        new Assign('a', new Assign('b', new Assign('c', new Id('d')))),
+      ])
+    ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});

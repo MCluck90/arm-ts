@@ -143,6 +143,7 @@ export const ELSE = token(/else\b/y);
 export const RETURN = token(/return\b/y);
 export const VAR = token(/var\b/y);
 export const WHILE = token(/while\b/y);
+export const FOR = token(/for\b/y);
 
 export const COMMA = token(/[,]/y);
 export const SEMICOLON = token(/;/y);
@@ -189,7 +190,12 @@ export const call = ID.bind((callee) =>
   )
 );
 
+export const assignment = ID.bind((name) =>
+  ASSIGN.and(expression).bind((value) => constant(new Assign(name, value)))
+);
+
 export const atom = call
+  .or(assignment)
   .or(id)
   .or(INTEGER)
   .or(CHARACTER)
@@ -258,10 +264,8 @@ export const varStatement = VAR.and(ID).bind((name) =>
   )
 );
 
-export const assignmentStatement = ID.bind((name) =>
-  ASSIGN.and(expression).bind((value) =>
-    SEMICOLON.and(constant(new Assign(name, value)))
-  )
+export const assignmentStatement = assignment.bind((assign) =>
+  SEMICOLON.and(constant(assign))
 );
 
 export const blockStatement = LEFT_BRACE.and(

@@ -97,6 +97,18 @@ function factorialLoop(n) {
   }
   return result;
 }
+
+function chainedAssignments() {
+  var a = 0;
+  var b = 0;
+  var c = 0;
+  var d = 0;
+  a = b = c = d = 1;
+  assert(a == 1);
+  assert(b == 1);
+  assert(c == 1);
+  assert(d == 1);
+}
 `
   )
   .emit(new Environment());
