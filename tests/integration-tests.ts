@@ -33,10 +33,9 @@ function main() {
 
   assert(factorial(5) == 120);
 
-  var x = 4 + 2 * (12 - 2);
-  var y = 3 * (5 + 1);
-  var z = x + y;
-  assert(z == 42);
+  variableDeclarations();
+  assignment();
+
 }
 
 function assert(x) {
@@ -60,6 +59,24 @@ function factorial(n) {
   } else {
     return n * factorial(n - 1);
   }
+}
+
+function variableDeclarations() {
+  var x = 4 + 2 * (12 - 2);
+  var y = 3 * (5 + 1);
+  var z = x + y;
+  assert(z == 42);
+}
+
+function assignment() {
+  var a = 1;
+  var b = 2;
+  var c = 3;
+  var d = 4;
+  assert(a == 1);
+  assert(b == 2);
+  assert(c == 3);
+  assert(d == 4);
 }
 `
   )
