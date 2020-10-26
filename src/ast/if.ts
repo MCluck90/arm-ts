@@ -1,6 +1,7 @@
 import { emit } from '../emit';
 import { Label } from '../label';
-import { AST } from '../types';
+import { AST } from '../ast';
+import { Environment } from '../environment';
 
 export class If implements AST {
   constructor(
@@ -9,16 +10,16 @@ export class If implements AST {
     public alternative: AST
   ) {}
 
-  emit() {
+  emit(env: Environment) {
     const ifFalseLabel = new Label();
     const endIfLabel = new Label();
-    this.conditional.emit();
+    this.conditional.emit(env);
     emit(`  cmp r0, #0`);
     emit(`  beq ${ifFalseLabel}`);
-    this.consequence.emit();
+    this.consequence.emit(env);
     emit(`  b ${endIfLabel}`);
     emit(`${ifFalseLabel}:`);
-    this.alternative.emit();
+    this.alternative.emit(env);
     emit(`${endIfLabel}:`);
   }
 

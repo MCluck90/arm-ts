@@ -1,17 +1,18 @@
 import { emit } from '../emit';
-import { AST } from '../types';
+import { AST } from '../ast';
+import { Environment } from '../environment';
 
 export class Call implements AST {
   constructor(public callee: string, public args: AST[]) {}
 
-  emit() {
+  emit(env: Environment) {
     switch (this.args.length) {
       case 0:
         emit(`  bl ${this.callee}`);
         break;
 
       case 1:
-        this.args[0].emit();
+        this.args[0].emit(env);
         emit(`  bl ${this.callee}`);
         break;
 
@@ -20,7 +21,7 @@ export class Call implements AST {
       case 4:
         emit(`  sub sp, sp, #16`);
         this.args.forEach((arg, i) => {
-          arg.emit();
+          arg.emit(env);
           emit(`  str r0, [sp, #${4 * i}]`);
         });
         emit(`  pop {r0, r1, r2, r3}`);

@@ -1,10 +1,17 @@
-import { AST } from '../types';
+import { AST } from '../ast';
+import { emit } from '../emit';
+import { Environment } from '../environment';
 
 export class Id implements AST {
   constructor(public value: string) {}
 
-  emit() {
-    throw new Error('Not yet implemented');
+  emit(env: Environment) {
+    const offset = env.locals.get(this.value);
+    if (offset) {
+      emit(`  ldr r0, [fp, #${offset}]`);
+    } else {
+      throw new Error(`Undefined variable: ${this.value}`);
+    }
   }
 
   equals(other: AST): boolean {

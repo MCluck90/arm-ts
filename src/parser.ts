@@ -17,11 +17,9 @@ import {
   Subtract,
   Var,
   While,
-  Main,
-  Assert,
 } from './ast';
 import { Character } from './ast/character';
-import { AST } from './types';
+import { AST } from './ast';
 
 export class Source {
   constructor(public string: string, public index: number) {}
@@ -187,13 +185,7 @@ export const args = expression
 
 export const call = ID.bind((callee) =>
   LEFT_PAREN.and(
-    args.bind((args) =>
-      RIGHT_PAREN.and(
-        constant(
-          callee === 'assert' ? new Assert(args[0]) : new Call(callee, args)
-        )
-      )
-    )
+    args.bind((args) => RIGHT_PAREN.and(constant(new Call(callee, args))))
   )
 );
 
@@ -283,11 +275,7 @@ export const parameters = ID.bind((param) =>
 export const functionStatement = FUNCTION.and(ID).bind((name) =>
   LEFT_PAREN.and(parameters).bind((parameters) =>
     RIGHT_PAREN.and(blockStatement).bind((block) =>
-      constant(
-        name === 'main'
-          ? new Main(block.statements)
-          : new Function(name, parameters, block)
-      )
+      constant(new Function(name, parameters, block))
     )
   )
 );

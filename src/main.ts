@@ -1,3 +1,4 @@
+import { Environment } from './environment';
 import { parser } from './parser';
 
 parser
@@ -7,4 +8,4 @@ function main() {
   putchar('.');
 }`
   )
-  .emit();
+  .emit(new Environment(new Map()));

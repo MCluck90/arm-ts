@@ -1,4 +1,4 @@
-import { AST } from '../types';
+import { AST } from '../ast';
 
 export class Assign implements AST {
   constructor(public name: string, public value: AST) {}

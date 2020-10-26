@@ -1,4 +1,4 @@
-import { AST } from '../types';
+import { AST } from '../ast';
 
 export class Return implements AST {
   constructor(public term: AST) {}

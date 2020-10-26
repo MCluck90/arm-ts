@@ -2,8 +2,8 @@
 # Will compile and execute ARM assembly
 # Run in WSL
 
-npm run --silent start > __program.s
-arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out
-qemu-arm ./__out
-rm ./__out
+npm run --silent start > __program.s &&
+arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
+qemu-arm ./__out &&
+rm ./__out &&
 rm ./__program.s

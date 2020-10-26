@@ -1,4 +1,4 @@
-export * from './assert';
+export * from './ast';
 export * from './assign';
 export * from './block';
 export * from './call';
@@ -6,7 +6,6 @@ export * from './function';
 export * from './id';
 export * from './if';
 export * from './integer';
-export * from './main';
 export * from './operators';
 export * from './return';
 export * from './var';

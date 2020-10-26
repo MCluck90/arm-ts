@@ -1,5 +1,5 @@
 import { emit } from '../emit';
-import { AST } from '../types';
+import { AST } from '../ast';
 
 export class Character implements AST {
   constructor(public value: string) {}

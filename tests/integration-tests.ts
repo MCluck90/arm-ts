@@ -1,3 +1,4 @@
+import { Environment } from '../src/environment';
 import { parser } from '../src/parser';
 
 parser
@@ -27,6 +28,24 @@ function main() {
   } else {
     assert(1);
   }
-}`
+
+  assert1234(1, 2, 3, 4);
+}
+
+function assert(x) {
+  if (x) {
+    putchar(46);
+  } else {
+    putchar(70);
+  }
+}
+
+function assert1234(a, b, c, d) {
+  assert(a == 1);
+  assert(b == 2);
+  assert(c == 3);
+  assert(d == 4);
+}
+`
   )
-  .emit();
+  .emit(new Environment(new Map()));

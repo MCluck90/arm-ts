@@ -1,3 +1,5 @@
 node_modules/
 .tsbuildinfo
 debug.log
+__out
+__program.s

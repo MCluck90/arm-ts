@@ -1,4 +1,4 @@
-import { AST } from '../types';
+import { AST } from '../ast';
 
 export class While implements AST {
   constructor(public conditional: AST, public body: AST) {}

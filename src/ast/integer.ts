@@ -1,5 +1,5 @@
 import { emit } from '../emit';
-import { AST } from '../types';
+import { AST } from '../ast';
 
 export class Integer implements AST {
   constructor(public value: number) {}

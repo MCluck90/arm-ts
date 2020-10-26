@@ -1,10 +1,11 @@
-import { AST } from '../types';
+import { AST } from '../ast';
+import { Environment } from '../environment';
 
 export class Block implements AST {
   constructor(public statements: AST[]) {}
 
-  emit() {
-    this.statements.forEach((statement) => statement.emit());
+  emit(env: Environment) {
+    this.statements.forEach((statement) => statement.emit(env));
   }
 
   equals(other: AST): boolean {
