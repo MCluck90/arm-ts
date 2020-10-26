@@ -46,10 +46,12 @@ export class Function implements AST {
 
   setupEnvironment() {
     const locals = new Map();
+    const maxOffset =
+      (this.parameters.length + (this.parameters.length % 2)) * 4;
     this.parameters.forEach((parameter, i) => {
-      locals.set(parameter, 4 * i - 16);
+      locals.set(parameter, 4 * i - maxOffset);
     });
-    return new Environment(locals, -20);
+    return new Environment(locals, -maxOffset - 4);
   }
 
   equals(other: AST): boolean {
