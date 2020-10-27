@@ -1,7 +1,7 @@
 import {
+  Add,
   ArrayLiteral,
   ArrayLookup,
-  Add,
   Assign,
   Block,
   Boolean,
@@ -10,10 +10,14 @@ import {
   Divide,
   Equal,
   Function,
+  GreaterThan,
+  GreaterThanOrEqual,
   Id,
   If,
   Integer,
   Length,
+  LessThan,
+  LessThanOrEqual,
   Multiply,
   Not,
   NotEqual,
@@ -37,10 +41,14 @@ export interface Visitor<T> {
   visitDivide(node: Divide): T;
   visitEqual(node: Equal): T;
   visitFunction(node: Function): T;
+  visitGreaterThan(node: GreaterThan): T;
+  visitGreaterThanOrEqual(node: GreaterThanOrEqual): T;
   visitId(node: Id): T;
   visitIf(node: If): T;
   visitInteger(node: Integer): T;
   visitLength(node: Length): T;
+  visitLessThan(node: LessThan): T;
+  visitLessThanOrEqual(node: LessThanOrEqual): T;
   visitMultiply(node: Multiply): T;
   visitNot(node: Not): T;
   visitNotEqual(node: NotEqual): T;

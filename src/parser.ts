@@ -11,10 +11,14 @@ import {
   Equal,
   Function,
   FunctionType,
+  GreaterThan,
+  GreaterThanOrEqual,
   Id,
   If,
   InfixOperatorConstructor,
   Integer,
+  LessThan,
+  LessThanOrEqual,
   Multiply,
   Not,
   NotEqual,
@@ -174,8 +178,8 @@ export const LEFT_BRACKET = token(/[[]/y);
 export const RIGHT_BRACKET = token(/[\]]/y);
 export const LEFT_PAREN = token(/[(]/y);
 export const RIGHT_PAREN = token(/[)]/y);
-export const LESS_THAN = token(/[<]/y);
-export const GREATER_THAN = token(/[>]/y);
+export const OPEN_TYPE_BRACKET = token(/[<]/y);
+export const CLOSE_TYPE_BRACKET = token(/[>]/y);
 export const SINGLE_QUOTE = token(/[']/y);
 export const DOUBLE_QUOTE = token(/["]/y);
 
@@ -192,9 +196,9 @@ export const type = VOID.map((_) => new VoidType())
   .or(NUMBER.map((_) => new NumberType()))
   .or(arrayType);
 
-arrayType.parse = ARRAY.and(LESS_THAN)
+arrayType.parse = ARRAY.and(OPEN_TYPE_BRACKET)
   .and(type)
-  .bind((type) => GREATER_THAN.and(constant(new ArrayType(type)))).parse;
+  .bind((type) => CLOSE_TYPE_BRACKET.and(constant(new ArrayType(type)))).parse;
 
 const characterWithoutSingleQuote = regexp(/[\x20-\x26\x28-\x7F]/y);
 const characterWithoutDoubleQuote = regexp(/[\x20-\x21\x23-\x7F]/y);
@@ -212,6 +216,10 @@ export const id = ID.map((x) => new Id(x));
 export const NOT = token(/!/y).map(() => Not);
 export const EQUAL = token(/==/y).map(() => Equal);
 export const NOT_EQUAL = token(/!=/y).map(() => NotEqual);
+export const LESS_THAN = token(/</y).map(() => LessThan);
+export const LESS_THAN_OR_EQUAL = token(/<=/y).map(() => LessThanOrEqual);
+export const GREATER_THAN = token(/>/y).map(() => GreaterThan);
+export const GREATER_THAN_OR_EQUAL = token(/>=/y).map(() => GreaterThanOrEqual);
 export const PLUS = token(/[+]/y).map(() => Add);
 export const MINUS = token(/[-]/y).map(() => Subtract);
 export const STAR = token(/[*]/y).map(() => Multiply);
@@ -283,7 +291,13 @@ const infix = (
 
 export const product = infix(STAR.or(SLASH), unary);
 export const sum = infix(PLUS.or(MINUS), product);
-export const comparision = infix(EQUAL.or(NOT_EQUAL), sum);
+export const comparision = infix(
+  EQUAL.or(NOT_EQUAL),
+  infix(
+    LESS_THAN_OR_EQUAL.or(GREATER_THAN_OR_EQUAL),
+    infix(LESS_THAN.or(GREATER_THAN), sum)
+  )
+);
 
 expression.parse = comparision.parse;
 

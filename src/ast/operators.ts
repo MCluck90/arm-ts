@@ -45,6 +45,70 @@ export class NotEqual implements AST {
   }
 }
 
+export class LessThan implements AST {
+  constructor(public left: AST, public right: AST) {}
+
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitLessThan(this);
+  }
+
+  equals(other: AST): boolean {
+    return (
+      other instanceof LessThan &&
+      this.left.equals(other.left) &&
+      this.right.equals(other.right)
+    );
+  }
+}
+
+export class LessThanOrEqual implements AST {
+  constructor(public left: AST, public right: AST) {}
+
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitLessThanOrEqual(this);
+  }
+
+  equals(other: AST): boolean {
+    return (
+      other instanceof LessThanOrEqual &&
+      this.left.equals(other.left) &&
+      this.right.equals(other.right)
+    );
+  }
+}
+
+export class GreaterThan implements AST {
+  constructor(public left: AST, public right: AST) {}
+
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitGreaterThan(this);
+  }
+
+  equals(other: AST): boolean {
+    return (
+      other instanceof GreaterThan &&
+      this.left.equals(other.left) &&
+      this.right.equals(other.right)
+    );
+  }
+}
+
+export class GreaterThanOrEqual implements AST {
+  constructor(public left: AST, public right: AST) {}
+
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitGreaterThanOrEqual(this);
+  }
+
+  equals(other: AST): boolean {
+    return (
+      other instanceof GreaterThanOrEqual &&
+      this.left.equals(other.left) &&
+      this.right.equals(other.right)
+    );
+  }
+}
+
 export class Add implements AST {
   constructor(public left: AST, public right: AST) {}
 
@@ -113,6 +177,10 @@ export interface InfixOperatorConstructor {
   new (left: AST, right: AST):
     | Equal
     | NotEqual
+    | LessThan
+    | LessThanOrEqual
+    | GreaterThan
+    | GreaterThanOrEqual
     | Add
     | Subtract
     | Multiply

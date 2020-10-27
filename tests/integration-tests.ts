@@ -1,4 +1,3 @@
-import { FunctionType, NumberType, VoidType } from '../src/ast';
 import { parser } from '../src/parser';
 import { CodeGenerator } from '../src/passes/codegen';
 import { createLibCTypes, TypeChecker } from '../src/passes/type-checking';
@@ -92,6 +91,20 @@ function arrays() {
   assert(a[0 + 2] == (2 + 1));
 }
 
+function comparisons() {
+  assert(1 < 2);
+  assert(1 <= 2);
+  assert(1 <= 1);
+  assert(1 < 0 == false);
+  assert(1 <= 0 == false);
+
+  assert(1 > 0);
+  assert(1 >= 0);
+  assert(1 >= 1);
+  assert(1 > 2 == false);
+  assert(1 >= 2 == false);
+}
+
 function main() {
   assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
@@ -128,6 +141,8 @@ function main() {
   chainedAssignments();
   booleans();
   nullAndUndefined();
+  arrays();
+  comparisons();
 }
 `
 );

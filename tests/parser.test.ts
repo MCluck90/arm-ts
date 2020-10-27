@@ -8,10 +8,15 @@ import {
   BooleanType,
   Call,
   Character,
+  Equal,
   Function,
   FunctionType,
+  GreaterThan,
+  GreaterThanOrEqual,
   Id,
   Integer,
+  LessThan,
+  LessThanOrEqual,
   Multiply,
   Not,
   NotEqual,
@@ -267,6 +272,31 @@ test('Can parse type annotations in function signatures', () => {
       'doNothing',
       new FunctionType(new Map(), new VoidType()),
       new Block([])
+    ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse comparison operators', () => {
+  const source = `
+    1 < 2;
+    1 > 2;
+    1 <= 2;
+    1 >= 2;
+    1 < 2 == true;
+    1 <= 2 == true;
+  `;
+  const expected = new Block([
+    new LessThan(new Integer(1), new Integer(2)),
+    new GreaterThan(new Integer(1), new Integer(2)),
+    new LessThanOrEqual(new Integer(1), new Integer(2)),
+    new GreaterThanOrEqual(new Integer(1), new Integer(2)),
+    new Equal(new LessThan(new Integer(1), new Integer(2)), new Boolean(true)),
+    new Equal(
+      new LessThanOrEqual(new Integer(1), new Integer(2)),
+      new Boolean(true)
     ),
   ]);
   const result = parser.parseStringToCompletion(source);

@@ -10,10 +10,14 @@ import {
   Divide,
   Equal,
   Function,
+  GreaterThan,
+  GreaterThanOrEqual,
   Id,
   If,
   Integer,
   Length,
+  LessThan,
+  LessThanOrEqual,
   Multiply,
   Not,
   NotEqual,
@@ -185,6 +189,26 @@ export class CodeGenerator implements Visitor<void> {
     return new CodeGenerator(locals, -maxOffset - 4);
   }
 
+  visitGreaterThan(node: GreaterThan) {
+    node.left.visit(this);
+    emit(`  push {r0, ip}`);
+    node.right.visit(this);
+    emit(`  pop {r1, ip}`);
+    emit(`  cmp r1, r0`);
+    emit(`  movgt r0, #1`);
+    emit(`  movle r0, #0`);
+  }
+
+  visitGreaterThanOrEqual(node: GreaterThanOrEqual) {
+    node.left.visit(this);
+    emit(`  push {r0, ip}`);
+    node.right.visit(this);
+    emit(`  pop {r1, ip}`);
+    emit(`  cmp r1, r0`);
+    emit(`  movge r0, #1`);
+    emit(`  movlt r0, #0`);
+  }
+
   visitId(node: Id) {
     const offset = this.locals.get(node.value);
     if (offset) {
@@ -214,6 +238,26 @@ export class CodeGenerator implements Visitor<void> {
   visitLength(node: Length) {
     node.array.visit(this);
     emit(`  ldr r0, [r0, #0]`);
+  }
+
+  visitLessThan(node: LessThan) {
+    node.left.visit(this);
+    emit(`  push {r0, ip}`);
+    node.right.visit(this);
+    emit(`  pop {r1, ip}`);
+    emit(`  cmp r1, r0`);
+    emit(`  movlt r0, #1`);
+    emit(`  movge r0, #0`);
+  }
+
+  visitLessThanOrEqual(node: LessThanOrEqual) {
+    node.left.visit(this);
+    emit(`  push {r0, ip}`);
+    node.right.visit(this);
+    emit(`  pop {r1, ip}`);
+    emit(`  cmp r1, r0`);
+    emit(`  movle r0, #1`);
+    emit(`  movgt r0, #0`);
   }
 
   visitMultiply(node: Multiply) {

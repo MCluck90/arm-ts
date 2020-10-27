@@ -13,10 +13,14 @@ import {
   Equal,
   Function,
   FunctionType,
+  GreaterThan,
+  GreaterThanOrEqual,
   Id,
   If,
   Integer,
   Length,
+  LessThan,
+  LessThanOrEqual,
   Multiply,
   Not,
   NotEqual,
@@ -138,6 +142,18 @@ export class TypeChecker implements Visitor<Type> {
     return new VoidType();
   }
 
+  visitGreaterThan(node: GreaterThan): Type {
+    assertType(new NumberType(), node.left.visit(this));
+    assertType(new NumberType(), node.right.visit(this));
+    return new BooleanType();
+  }
+
+  visitGreaterThanOrEqual(node: GreaterThanOrEqual): Type {
+    assertType(new NumberType(), node.left.visit(this));
+    assertType(new NumberType(), node.right.visit(this));
+    return new BooleanType();
+  }
+
   visitId(node: Id): Type {
     const type = this.locals.get(node.value);
     if (!type) {
@@ -164,6 +180,18 @@ export class TypeChecker implements Visitor<Type> {
     } else {
       throw new TypeError(`Expected an array, but got ${type}`);
     }
+  }
+
+  visitLessThan(node: LessThan): Type {
+    assertType(new NumberType(), node.left.visit(this));
+    assertType(new NumberType(), node.right.visit(this));
+    return new BooleanType();
+  }
+
+  visitLessThanOrEqual(node: LessThanOrEqual): Type {
+    assertType(new NumberType(), node.left.visit(this));
+    assertType(new NumberType(), node.right.visit(this));
+    return new BooleanType();
   }
 
   visitMultiply(node: Multiply): Type {
