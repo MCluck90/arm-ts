@@ -23,10 +23,10 @@ import {
   Undefined,
   Var,
   While,
-} from '../ast';
-import { emit } from '../emit';
-import { Label } from '../label';
-import { Visitor } from '../visitor';
+} from '../../ast';
+import { emit } from './emit';
+import { Label } from './label';
+import { Visitor } from '../../visitor';
 
 export class CodeGenerator implements Visitor<void> {
   constructor(

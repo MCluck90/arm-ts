@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parser } from './parser';
-import { CodeGenerator } from './passes/code-generator';
+import { CodeGenerator } from './passes/codegen';
 
 if (process.argv.length !== 3) {
   console.error(`Usage: npm start -- fileName`);

@@ -1,5 +1,5 @@
 import { parser } from '../src/parser';
-import { CodeGenerator } from '../src/passes/code-generator';
+import { CodeGenerator } from '../src/passes/codegen';
 
 parser
   .parseStringToCompletion(
