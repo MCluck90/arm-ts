@@ -1,51 +1,12 @@
+import { FunctionType, NumberType, VoidType } from '../src/ast';
 import { parser } from '../src/parser';
 import { CodeGenerator } from '../src/passes/codegen';
+import { createLibCTypes, TypeChecker } from '../src/passes/type-checking';
 
-parser
-  .parseStringToCompletion(
-    `
-function main() {
-  assert(1);
-  assert(!0);
-  assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
-
-  {
-    assert(1);
-    assert(1);
-  }
-  putchar(46);
-  putchar('.');
-  assert(rand() != 42);
-
-  if (1) {
-    assert(1);
-  } else {
-    assert(0);
-  }
-
-  if (0) {
-    assert(0);
-  } else {
-    assert(1);
-  }
-
-  assert1234(1, 2, 3, 4);
-
-  assert(factorial(5) == 120);
-
-  variableDeclarations();
-  assignment();
-  whileLoop();
-
-  assert(factorialLoop(5) == 120);
-
-  chainedAssignments();
-  booleans();
-  nullAndUndefined();
-}
-
-function assert(x) {
-  if (x) {
+const ast = parser.parseStringToCompletion(
+  `
+function assert(condition: boolean) {
+  if (condition) {
     putchar(46);
   } else {
     putchar(70);
@@ -130,6 +91,46 @@ function arrays() {
   assert(a[0 + 1] == 2);
   assert(a[0 + 2] == (2 + 1));
 }
+
+function main() {
+  assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
+
+  {
+    assert(true);
+    assert(true);
+  }
+  putchar(46);
+  putchar('.');
+  assert(rand() != 42);
+
+  if (true) {
+    assert(true);
+  } else {
+    assert(false);
+  }
+
+  if (false) {
+    assert(false);
+  } else {
+    assert(true);
+  }
+
+  assert1234(1, 2, 3, 4);
+
+  assert(factorial(5) == 120);
+
+  variableDeclarations();
+  assignment();
+  whileLoop();
+
+  assert(factorialLoop(5) == 120);
+
+  chainedAssignments();
+  booleans();
+  nullAndUndefined();
+}
 `
-  )
-  .visit(new CodeGenerator());
+);
+
+ast.visit(new TypeChecker(new Map(), createLibCTypes()));
+ast.visit(new CodeGenerator());

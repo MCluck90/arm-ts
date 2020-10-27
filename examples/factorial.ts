@@ -1,5 +1,6 @@
-function assert(x) {
-  if (x) {
+// @ts-nocheck
+function assert(condition: boolean) {
+  if (condition) {
     putchar('.');
   } else {
     putchar('F');
