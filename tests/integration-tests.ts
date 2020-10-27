@@ -123,6 +123,13 @@ function nullAndUndefined() {
   assert(null == null);
   assert(undefined == undefined);
 }
+
+function arrays() {
+  var a = [1, 2, 3];
+  assert(a[0] == 1);
+  assert(a[0 + 1] == 2);
+  assert(a[0 + 2] == (2 + 1));
+}
 `
   )
   .emit(new Environment());

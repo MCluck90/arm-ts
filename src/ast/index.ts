@@ -1,3 +1,5 @@
+export * from './array-literal';
+export * from './array-lookup';
 export * from './assign';
 export * from './ast';
 export * from './block';
@@ -8,6 +10,7 @@ export * from './function';
 export * from './id';
 export * from './if';
 export * from './integer';
+export * from './length';
 export * from './null';
 export * from './operators';
 export * from './return';

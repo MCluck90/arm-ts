@@ -1,5 +1,7 @@
 import {
   Add,
+  ArrayLiteral,
+  ArrayLookup,
   Assign,
   Block,
   Call,
@@ -159,15 +161,23 @@ export const RIGHT_PAREN = token(/[)]/y);
 export const LEFT_BRACE = token(/[{]/y);
 export const RIGHT_BRACE = token(/[}]/y);
 export const SINGLE_QUOTE = token(/[']/y);
+export const DOUBLE_QUOTE = token(/["]/y);
+export const LEFT_BRACKET = token(/[[]/y);
+export const RIGHT_BRACKET = token(/[\]]/y);
 
 export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
 );
 
-const character = regexp(/[\x20-\x7F]/y);
-export const CHARACTER = SINGLE_QUOTE.and(character).bind((char) =>
-  SINGLE_QUOTE.and(constant(new Character(char)))
-);
+const characterWithoutSingleQuote = regexp(/[\x20-\x26\x28-\x7F]/y);
+const characterWithoutDoubleQuote = regexp(/[\x20-\x21\x23-\x7F]/y);
+export const CHARACTER = SINGLE_QUOTE.and(characterWithoutSingleQuote)
+  .bind((char) => SINGLE_QUOTE.and(constant(new Character(char))))
+  .or(
+    DOUBLE_QUOTE.and(characterWithoutDoubleQuote).bind((char) =>
+      DOUBLE_QUOTE.and(constant(new Character(char)))
+    )
+  );
 
 export const ID = token(/[a-zA-Z_][a-zA-Z0-9_]*/y);
 export const id = ID.map((x) => new Id(x));
@@ -197,6 +207,16 @@ export const call = ID.bind((callee) =>
   )
 );
 
+export const arrayLiteral = LEFT_BRACKET.and(args).bind((args) =>
+  RIGHT_BRACKET.and(constant(new ArrayLiteral(args)))
+);
+
+export const arrayLookup = id.bind((array) =>
+  LEFT_BRACKET.and(expression).bind((index) =>
+    RIGHT_BRACKET.and(constant(new ArrayLookup(array, index)))
+  )
+);
+
 export const assignment = ID.bind((name) =>
   ASSIGN.and(expression).bind((value) => constant(new Assign(name, value)))
 );
@@ -206,6 +226,8 @@ export const boolean = TRUE.or(FALSE);
 export const scalar = boolean.or(UNDEFINED).or(NULL).or(id).or(INTEGER);
 
 export const atom = call
+  .or(arrayLiteral)
+  .or(arrayLookup)
   .or(assignment)
   .or(scalar)
   .or(CHARACTER)

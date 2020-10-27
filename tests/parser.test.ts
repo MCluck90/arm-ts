@@ -1,4 +1,6 @@
 import {
+  ArrayLiteral,
+  ArrayLookup,
   Assign,
   Block,
   Boolean,
@@ -113,14 +115,22 @@ test('Can parse factorial function', () => {
 test('Can parse a character', () => {
   const source = `
     function outputChar() {
-      putchar('A');
+      'A';
+      "A";
+      '"';
+      "'";
     }
   `;
   const expected = new Block([
     new Function(
       'outputChar',
       [],
-      new Block([new Call('putchar', [new Character('A')])])
+      new Block([
+        new Character('A'),
+        new Character('A'),
+        new Character('"'),
+        new Character("'"),
+      ])
     ),
   ]);
   const result = parser.parseStringToCompletion(source);
@@ -176,6 +186,23 @@ test('Can parse null and undefined', () => {
   `;
   const expected = new Block([
     new Function('main', [], new Block([new Null(), new Undefined()])),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse arrays', () => {
+  const source = `
+    var a = [1, 2, '3'];
+    a[1];
+  `;
+  const expected = new Block([
+    new Var(
+      'a',
+      new ArrayLiteral([new Integer(1), new Integer(2), new Character('3')])
+    ),
+    new ArrayLookup(new Id('a'), new Integer(1)),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);
