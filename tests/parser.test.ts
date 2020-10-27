@@ -1,29 +1,24 @@
 import {
   Assign,
   Block,
+  Boolean,
+  Call,
+  Character,
   Function,
   Id,
+  Integer,
   Multiply,
   NotEqual,
-  Integer,
+  Null,
   Return,
   Subtract,
+  Undefined,
   Var,
   While,
-  Call,
 } from '../src/ast';
-import { Character } from '../src/ast/character';
-import {
-  atom,
-  comments,
-  ignored,
-  LEFT_PAREN,
-  Parser,
-  parser,
-  whitespace,
-} from '../src/parser';
+import { comments, ignored, Parser, parser, whitespace } from '../src/parser';
 
-const { constant, maybe, regexp, zeroOrMore } = Parser;
+const { constant, regexp } = Parser;
 
 test('Parsing alternatives with `or`', () => {
   const parser = regexp(/bye/y).or(regexp(/hai/y));
@@ -147,6 +142,40 @@ test('Can chain assignments', () => {
         new Assign('a', new Assign('b', new Assign('c', new Id('d')))),
       ])
     ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse booleans', () => {
+  const source = `
+    function main() {
+      true;
+      false;
+    }
+  `;
+  const expected = new Block([
+    new Function(
+      'main',
+      [],
+      new Block([new Boolean(true), new Boolean(false)])
+    ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse null and undefined', () => {
+  const source = `
+    function main() {
+      null;
+      undefined;
+    }
+  `;
+  const expected = new Block([
+    new Function('main', [], new Block([new Null(), new Undefined()])),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);

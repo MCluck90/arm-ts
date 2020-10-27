@@ -9,17 +9,20 @@ import {
   Id,
   If,
   InfixOperatorConstructor,
+  Integer,
   Multiply,
   Not,
   NotEqual,
-  Integer,
+  Null,
   Return,
   Subtract,
+  Undefined,
   Var,
   While,
 } from './ast';
 import { Character } from './ast/character';
 import { AST } from './ast';
+import { Boolean } from './ast/boolean';
 
 export class Source {
   constructor(public string: string, public index: number) {}
@@ -144,6 +147,10 @@ export const RETURN = token(/return\b/y);
 export const VAR = token(/var\b/y);
 export const WHILE = token(/while\b/y);
 export const FOR = token(/for\b/y);
+export const TRUE = token(/true\b/y).map(() => new Boolean(true));
+export const FALSE = token(/false\b/y).map(() => new Boolean(false));
+export const UNDEFINED = token(/undefined\b/y).map(() => new Undefined());
+export const NULL = token(/null\b/y).map(() => new Null());
 
 export const COMMA = token(/[,]/y);
 export const SEMICOLON = token(/;/y);
@@ -165,14 +172,14 @@ export const CHARACTER = SINGLE_QUOTE.and(character).bind((char) =>
 export const ID = token(/[a-zA-Z_][a-zA-Z0-9_]*/y);
 export const id = ID.map((x) => new Id(x));
 
-export const NOT = token(/!/y).map((_) => Not);
-export const EQUAL = token(/==/y).map((_) => Equal);
-export const NOT_EQUAL = token(/!=/y).map((_) => NotEqual);
-export const PLUS = token(/[+]/y).map((_) => Add);
-export const MINUS = token(/[-]/y).map((_) => Subtract);
-export const STAR = token(/[*]/y).map((_) => Multiply);
-export const SLASH = token(/[/]/y).map((_) => Divide);
-export const ASSIGN = token(/=/y).map((_) => Assign);
+export const NOT = token(/!/y).map(() => Not);
+export const EQUAL = token(/==/y).map(() => Equal);
+export const NOT_EQUAL = token(/!=/y).map(() => NotEqual);
+export const PLUS = token(/[+]/y).map(() => Add);
+export const MINUS = token(/[-]/y).map(() => Subtract);
+export const STAR = token(/[*]/y).map(() => Multiply);
+export const SLASH = token(/[/]/y).map(() => Divide);
+export const ASSIGN = token(/=/y).map(() => Assign);
 
 export const expression: Parser<AST> = Parser.error(
   'expression parser used before definition'
@@ -194,10 +201,13 @@ export const assignment = ID.bind((name) =>
   ASSIGN.and(expression).bind((value) => constant(new Assign(name, value)))
 );
 
+export const boolean = TRUE.or(FALSE);
+
+export const scalar = boolean.or(UNDEFINED).or(NULL).or(id).or(INTEGER);
+
 export const atom = call
   .or(assignment)
-  .or(id)
-  .or(INTEGER)
+  .or(scalar)
   .or(CHARACTER)
   .or(LEFT_PAREN.and(expression).bind((e) => RIGHT_PAREN.and(constant(e))));
 

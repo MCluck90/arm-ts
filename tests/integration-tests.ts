@@ -38,6 +38,10 @@ function main() {
   whileLoop();
 
   assert(factorialLoop(5) == 120);
+
+  chainedAssignments();
+  booleans();
+  nullAndUndefined();
 }
 
 function assert(x) {
@@ -108,6 +112,16 @@ function chainedAssignments() {
   assert(b == 1);
   assert(c == 1);
   assert(d == 1);
+}
+
+function booleans() {
+  assert(true);
+  assert(!false);
+}
+
+function nullAndUndefined() {
+  assert(null == null);
+  assert(undefined == undefined);
 }
 `
   )
