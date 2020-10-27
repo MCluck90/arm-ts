@@ -2,12 +2,15 @@ import {
   Add,
   ArrayLiteral,
   ArrayLookup,
+  ArrayType,
   Assign,
   Block,
+  BooleanType,
   Call,
   Divide,
   Equal,
   Function,
+  FunctionType,
   Id,
   If,
   InfixOperatorConstructor,
@@ -16,10 +19,13 @@ import {
   Not,
   NotEqual,
   Null,
+  NumberType,
   Return,
   Subtract,
+  Type,
   Undefined,
   Var,
+  VoidType,
   While,
 } from './ast';
 import { Character } from './ast/character';
@@ -142,32 +148,53 @@ export const ignored = zeroOrMore(whitespace.or(comments));
 const token = (pattern: RegExp) =>
   regexp(pattern).bind((value) => ignored.and(constant(value)));
 
+// Keywords
+export const ARRAY = token(/Array\b/y);
+export const BOOLEAN = token(/boolean\b/y);
+export const ELSE = token(/else\b/y);
+export const FALSE = token(/false\b/y).map(() => new Boolean(false));
+export const FOR = token(/for\b/y);
 export const FUNCTION = token(/function\b/y);
 export const IF = token(/if\b/y);
-export const ELSE = token(/else\b/y);
-export const RETURN = token(/return\b/y);
-export const VAR = token(/var\b/y);
-export const WHILE = token(/while\b/y);
-export const FOR = token(/for\b/y);
-export const TRUE = token(/true\b/y).map(() => new Boolean(true));
-export const FALSE = token(/false\b/y).map(() => new Boolean(false));
-export const UNDEFINED = token(/undefined\b/y).map(() => new Undefined());
 export const NULL = token(/null\b/y).map(() => new Null());
+export const NUMBER = token(/number\b/y);
+export const RETURN = token(/return\b/y);
+export const TRUE = token(/true\b/y).map(() => new Boolean(true));
+export const UNDEFINED = token(/undefined\b/y).map(() => new Undefined());
+export const VAR = token(/var\b/y);
+export const VOID = token(/void\b/y);
+export const WHILE = token(/while\b/y);
 
+export const COLON = token(/[:]/y);
 export const COMMA = token(/[,]/y);
 export const SEMICOLON = token(/;/y);
-export const LEFT_PAREN = token(/[(]/y);
-export const RIGHT_PAREN = token(/[)]/y);
 export const LEFT_BRACE = token(/[{]/y);
 export const RIGHT_BRACE = token(/[}]/y);
-export const SINGLE_QUOTE = token(/[']/y);
-export const DOUBLE_QUOTE = token(/["]/y);
 export const LEFT_BRACKET = token(/[[]/y);
 export const RIGHT_BRACKET = token(/[\]]/y);
+export const LEFT_PAREN = token(/[(]/y);
+export const RIGHT_PAREN = token(/[)]/y);
+export const LESS_THAN = token(/[<]/y);
+export const GREATER_THAN = token(/[>]/y);
+export const SINGLE_QUOTE = token(/[']/y);
+export const DOUBLE_QUOTE = token(/["]/y);
 
 export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
 );
+
+export const arrayType: Parser<Type> = Parser.error(
+  'arrayType parser used before definition'
+);
+
+export const type = VOID.map((_) => new VoidType())
+  .or(BOOLEAN.map((_) => new BooleanType()))
+  .or(NUMBER.map((_) => new NumberType()))
+  .or(arrayType);
+
+arrayType.parse = ARRAY.and(LESS_THAN)
+  .and(type)
+  .bind((type) => GREATER_THAN.and(constant(new ArrayType(type)))).parse;
 
 const characterWithoutSingleQuote = regexp(/[\x20-\x26\x28-\x7F]/y);
 const characterWithoutDoubleQuote = regexp(/[\x20-\x21\x23-\x7F]/y);
@@ -304,14 +331,34 @@ export const blockStatement = LEFT_BRACE.and(
   zeroOrMore(statement)
 ).bind((statements) => RIGHT_BRACE.and(constant(new Block(statements))));
 
-export const parameters = ID.bind((param) =>
-  zeroOrMore(COMMA.and(ID)).bind((params) => constant([param, ...params]))
-).or(constant([] as string[]));
+export const optionalTypeAnnotation = maybe(COLON.and(type));
+
+export const parameter: Parser<[string, Type]> = ID.bind((name) =>
+  optionalTypeAnnotation.bind((type) =>
+    constant([name, type ?? new NumberType()])
+  )
+);
+
+export const parameters: Parser<[string, Type][]> = parameter
+  .bind((param) =>
+    zeroOrMore(COMMA.and(parameter)).bind((params) =>
+      constant([param, ...params])
+    )
+  )
+  .or(constant([]));
 
 export const functionStatement = FUNCTION.and(ID).bind((name) =>
-  LEFT_PAREN.and(parameters).bind((parameters) =>
-    RIGHT_PAREN.and(blockStatement).bind((block) =>
-      constant(new Function(name, parameters, block))
+  LEFT_PAREN.and(parameters).bind((params) =>
+    RIGHT_PAREN.and(optionalTypeAnnotation).bind((returnType) =>
+      blockStatement.bind((body) =>
+        constant(
+          new Function(
+            name,
+            new FunctionType(new Map(params), returnType || new NumberType()),
+            body
+          )
+        )
+      )
     )
   )
 );

@@ -140,7 +140,7 @@ export class CodeGenerator implements Visitor<void> {
   }
 
   visitFunction(node: Function) {
-    if (node.parameters.length > 4) {
+    if (node.signature.parameters.size > 4) {
       throw new Error('More than 4 parameters is not supported');
     }
 
@@ -157,7 +157,7 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  push {fp, lr}`);
     emit(`  mov fp, sp`);
 
-    const registers = new Array(node.parameters.length)
+    const registers = new Array(node.signature.parameters.size)
       .fill(0)
       .map((_, i) => `r${i}`);
     if (registers.length % 2 === 1) {
@@ -176,9 +176,10 @@ export class CodeGenerator implements Visitor<void> {
 
   private setupFunctionEnvironment(node: Function) {
     const locals = new Map();
-    const numOfParams = node.parameters.length;
+    const params = Array.from(node.signature.parameters.keys());
+    const numOfParams = params.length;
     const maxOffset = (numOfParams + (numOfParams % 2)) * 4;
-    node.parameters.forEach((parameter, i) => {
+    params.forEach((parameter, i) => {
       locals.set(parameter, 4 * i - maxOffset);
     });
     return new CodeGenerator(locals, -maxOffset - 4);

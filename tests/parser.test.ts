@@ -1,21 +1,27 @@
 import {
   ArrayLiteral,
   ArrayLookup,
+  ArrayType,
   Assign,
   Block,
   Boolean,
+  BooleanType,
   Call,
   Character,
   Function,
+  FunctionType,
   Id,
   Integer,
   Multiply,
+  Not,
   NotEqual,
   Null,
+  NumberType,
   Return,
   Subtract,
   Undefined,
   Var,
+  VoidType,
   While,
 } from '../src/ast';
 import { comments, ignored, Parser, parser, whitespace } from '../src/parser';
@@ -93,7 +99,7 @@ test('Can parse factorial function', () => {
   const expected = new Block([
     new Function(
       'factorial',
-      ['n'],
+      new FunctionType(new Map([['n', new NumberType()]]), new NumberType()),
       new Block([
         new Var('result', new Integer(1)),
         new While(
@@ -124,7 +130,7 @@ test('Can parse a character', () => {
   const expected = new Block([
     new Function(
       'outputChar',
-      [],
+      new FunctionType(new Map(), new NumberType()),
       new Block([
         new Character('A'),
         new Character('A'),
@@ -147,7 +153,7 @@ test('Can chain assignments', () => {
   const expected = new Block([
     new Function(
       'main',
-      [],
+      new FunctionType(new Map(), new NumberType()),
       new Block([
         new Assign('a', new Assign('b', new Assign('c', new Id('d')))),
       ])
@@ -168,7 +174,7 @@ test('Can parse booleans', () => {
   const expected = new Block([
     new Function(
       'main',
-      [],
+      new FunctionType(new Map(), new NumberType()),
       new Block([new Boolean(true), new Boolean(false)])
     ),
   ]);
@@ -185,7 +191,11 @@ test('Can parse null and undefined', () => {
     }
   `;
   const expected = new Block([
-    new Function('main', [], new Block([new Null(), new Undefined()])),
+    new Function(
+      'main',
+      new FunctionType(new Map(), new NumberType()),
+      new Block([new Null(), new Undefined()])
+    ),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);
@@ -203,6 +213,61 @@ test('Can parse arrays', () => {
       new ArrayLiteral([new Integer(1), new Integer(2), new Character('3')])
     ),
     new ArrayLookup(new Id('a'), new Integer(1)),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse type annotations in function signatures', () => {
+  const source = `
+    function identity(x: number) {
+      return x;
+    }
+
+    function pair(x: number, y: number): Array<number> {
+      return [x, y];
+    }
+
+    function not(value: boolean): boolean {
+      return !value;
+    }
+
+    function doNothing(): void { }
+  `;
+  const expected = new Block([
+    new Function(
+      'identity',
+      new FunctionType(new Map([['x', new NumberType()]]), new NumberType()),
+      new Block([new Return(new Id('x'))])
+    ),
+
+    new Function(
+      'pair',
+      new FunctionType(
+        new Map([
+          ['x', new NumberType()],
+          ['y', new NumberType()],
+        ]),
+        new ArrayType(new NumberType())
+      ),
+      new Block([new Return(new ArrayLiteral([new Id('x'), new Id('y')]))])
+    ),
+
+    new Function(
+      'not',
+      new FunctionType(
+        new Map([['value', new BooleanType()]]),
+        new BooleanType()
+      ),
+      new Block([new Return(new Not(new Id('value')))])
+    ),
+
+    new Function(
+      'doNothing',
+      new FunctionType(new Map(), new VoidType()),
+      new Block([])
+    ),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);

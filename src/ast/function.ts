@@ -1,10 +1,10 @@
-import { AST } from '../ast';
+import { AST, FunctionType } from '../ast';
 import { Visitor } from '../visitor';
 
 export class Function implements AST {
   constructor(
     public name: string,
-    public parameters: string[],
+    public signature: FunctionType,
     public body: AST
   ) {}
 
@@ -16,8 +16,7 @@ export class Function implements AST {
     return (
       other instanceof Function &&
       other.name === this.name &&
-      other.parameters.length === this.parameters.length &&
-      this.parameters.every((param, i) => param === other.parameters[i]) &&
+      other.signature.equals(this.signature) &&
       this.body.equals(other.body)
     );
   }

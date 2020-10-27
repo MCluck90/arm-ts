@@ -9,7 +9,7 @@ export class Not implements AST {
   }
 
   equals(other: AST): boolean {
-    return other instanceof Not && other.term === this.term;
+    return other instanceof Not && other.term.equals(this.term);
   }
 }
 
