@@ -1,11 +1,11 @@
 import { AST } from '../ast';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export class Block implements AST {
   constructor(public statements: AST[]) {}
 
-  emit(env: Environment) {
-    this.statements.forEach((statement) => statement.emit(env));
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitBlock(this);
   }
 
   equals(other: AST): boolean {

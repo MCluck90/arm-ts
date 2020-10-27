@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { Environment } from './environment';
 import { parser } from './parser';
+import { CodeGenerator } from './passes/code-generator';
 
 if (process.argv.length !== 3) {
   console.error(`Usage: npm start -- fileName`);
@@ -10,5 +10,5 @@ if (process.argv.length !== 3) {
   const filename = process.argv[2];
   const filePath = path.join(process.cwd(), filename);
   const contents = fs.readFileSync(filePath).toString();
-  parser.parseStringToCompletion(contents).emit(new Environment());
+  parser.parseStringToCompletion(contents).visit(new CodeGenerator());
 }

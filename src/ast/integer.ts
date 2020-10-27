@@ -1,11 +1,11 @@
-import { emit } from '../emit';
 import { AST } from '../ast';
+import { Visitor } from '../visitor';
 
 export class Integer implements AST {
   constructor(public value: number) {}
 
-  emit() {
-    emit(`  ldr r0, =${this.value}`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitInteger(this);
   }
 
   equals(other: AST): boolean {

@@ -1,12 +1,11 @@
-import { emit } from '../emit';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 import { AST } from './ast';
 
 export class Null implements AST {
   constructor() {}
 
-  emit(_env: Environment) {
-    emit(`  mov r0, #0`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitNull(this);
   }
 
   equals(other: AST): boolean {

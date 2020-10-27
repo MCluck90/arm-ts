@@ -1,11 +1,11 @@
-import { emit } from '../emit';
 import { AST } from '../ast';
+import { Visitor } from '../visitor';
 
 export class Character implements AST {
   constructor(public value: string) {}
 
-  emit() {
-    emit(`  ldr r0, =${this.value.charCodeAt(0)}`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitCharacter(this);
   }
 
   equals(other: AST): boolean {

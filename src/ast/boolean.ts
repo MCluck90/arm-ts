@@ -1,12 +1,11 @@
-import { emit } from '../emit';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 import { AST } from './ast';
 
 export class Boolean implements AST {
   constructor(public value: boolean) {}
 
-  emit(_env: Environment) {
-    emit(`  mov r0, #${+this.value}`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitBoolean(this);
   }
 
   equals(other: AST): boolean {

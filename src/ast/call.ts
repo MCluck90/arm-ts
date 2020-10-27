@@ -1,36 +1,11 @@
-import { emit } from '../emit';
 import { AST } from '../ast';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export class Call implements AST {
   constructor(public callee: string, public args: AST[]) {}
 
-  emit(env: Environment) {
-    switch (this.args.length) {
-      case 0:
-        emit(`  bl ${this.callee}`);
-        break;
-
-      case 1:
-        this.args[0].emit(env);
-        emit(`  bl ${this.callee}`);
-        break;
-
-      case 2:
-      case 3:
-      case 4:
-        emit(`  sub sp, sp, #16`);
-        this.args.forEach((arg, i) => {
-          arg.emit(env);
-          emit(`  str r0, [sp, #${4 * i}]`);
-        });
-        emit(`  pop {r0, r1, r2, r3}`);
-        emit(`  bl ${this.callee}`);
-        break;
-
-      default:
-        throw new Error('More than 4 arguments is not supported');
-    }
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitCall(this);
   }
 
   equals(other: AST): boolean {

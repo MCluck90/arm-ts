@@ -1,13 +1,11 @@
-import { emit } from '../emit';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 import { AST } from './ast';
 
 export class Length implements AST {
   constructor(public array: AST) {}
 
-  emit(env: Environment) {
-    this.array.emit(env);
-    emit(`  ldr r0, [r0, #0]`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitLength(this);
   }
 
   equals(other: AST): boolean {

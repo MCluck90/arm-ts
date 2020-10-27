@@ -1,5 +1,5 @@
-import { Environment } from '../src/environment';
 import { parser } from '../src/parser';
+import { CodeGenerator } from '../src/passes/code-generator';
 
 parser
   .parseStringToCompletion(
@@ -132,4 +132,4 @@ function arrays() {
 }
 `
   )
-  .emit(new Environment());
+  .visit(new CodeGenerator());

@@ -1,17 +1,11 @@
 import { AST } from '../ast';
-import { emit } from '../emit';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export class Id implements AST {
   constructor(public value: string) {}
 
-  emit(env: Environment) {
-    const offset = env.locals.get(this.value);
-    if (offset) {
-      emit(`  ldr r0, [fp, #${offset}]`);
-    } else {
-      throw new Error(`Undefined variable: ${this.value}`);
-    }
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitId(this);
   }
 
   equals(other: AST): boolean {

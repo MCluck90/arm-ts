@@ -1,6 +1,6 @@
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export interface AST {
-  emit(env: Environment): void;
+  visit<T>(v: Visitor<T>): T;
   equals(other: AST): boolean;
 }

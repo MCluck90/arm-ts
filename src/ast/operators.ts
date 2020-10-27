@@ -1,15 +1,11 @@
-import { emit } from '../emit';
 import { AST } from '../ast';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export class Not implements AST {
   constructor(public term: AST) {}
 
-  emit(env: Environment) {
-    this.term.emit(env);
-    emit(`  cmp r0, #0`);
-    emit(`  moveq r0, #1`);
-    emit(`  movne r0, #0`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitNot(this);
   }
 
   equals(other: AST): boolean {
@@ -20,14 +16,8 @@ export class Not implements AST {
 export class Equal implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  cmp r0, r1`);
-    emit(`  moveq r0, #1`);
-    emit(`  movne r0, #0`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitEqual(this);
   }
 
   equals(other: AST): boolean {
@@ -42,14 +32,8 @@ export class Equal implements AST {
 export class NotEqual implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  cmp r0, r1`);
-    emit(`  moveq r0, #0`);
-    emit(`  movne r0, #1`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitNotEqual(this);
   }
 
   equals(other: AST): boolean {
@@ -64,12 +48,8 @@ export class NotEqual implements AST {
 export class Add implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  add r0, r0, r1`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitAdd(this);
   }
 
   equals(other: AST): boolean {
@@ -84,12 +64,8 @@ export class Add implements AST {
 export class Subtract implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  sub r0, r1, r0`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitSubtract(this);
   }
 
   equals(other: AST): boolean {
@@ -104,12 +80,8 @@ export class Subtract implements AST {
 export class Multiply implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  mul r0, r0, r1`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitMultiply(this);
   }
 
   equals(other: AST): boolean {
@@ -124,12 +96,8 @@ export class Multiply implements AST {
 export class Divide implements AST {
   constructor(public left: AST, public right: AST) {}
 
-  emit(env: Environment) {
-    this.left.emit(env);
-    emit(`  push {r0, ip}`);
-    this.right.emit(env);
-    emit(`  pop {r1, ip}`);
-    emit(`  udiv r0, r0, r1`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitDivide(this);
   }
 
   equals(other: AST): boolean {

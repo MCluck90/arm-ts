@@ -1,14 +1,11 @@
 import { AST } from '../ast';
-import { emit } from '../emit';
-import { Environment } from '../environment';
+import { Visitor } from '../visitor';
 
 export class Return implements AST {
   constructor(public term: AST) {}
 
-  emit(env: Environment) {
-    this.term.emit(env);
-    emit(`  mov sp, fp`);
-    emit(`  pop {fp, pc}`);
+  visit<T>(visitor: Visitor<T>) {
+    return visitor.visitReturn(this);
   }
 
   equals(other: AST): boolean {
