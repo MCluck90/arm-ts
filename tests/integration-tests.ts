@@ -20,11 +20,11 @@ function assert1234(a, b, c, d) {
 }
 
 function factorial(n) {
-  if (n == 0) {
+  if (n <= 0) {
     return 1;
-  } else {
-    return n * factorial(n - 1);
   }
+
+  return n * factorial(n - 1);
 }
 
 function variableDeclarations() {
@@ -105,6 +105,16 @@ function comparisons() {
   assert(1 >= 2 == false);
 }
 
+function chainIfElse() {
+  if (false) {
+    assert(false);
+  } else if (false) {
+    assert(false);
+  } else {
+    assert(true);
+  }
+}
+
 function main() {
   assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
@@ -143,6 +153,7 @@ function main() {
   nullAndUndefined();
   arrays();
   comparisons();
+  chainIfElse();
 }
 `
 );

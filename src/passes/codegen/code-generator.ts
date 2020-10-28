@@ -223,11 +223,17 @@ export class CodeGenerator implements Visitor<void> {
     const endIfLabel = new Label();
     node.conditional.visit(this);
     emit(`  cmp r0, #0`);
-    emit(`  beq ${ifFalseLabel}`);
+    if (node.alternative) {
+      emit(`  beq ${ifFalseLabel}`);
+    } else {
+      emit(`  beq ${endIfLabel}`);
+    }
     node.consequence.visit(this);
     emit(`  b ${endIfLabel}`);
-    emit(`${ifFalseLabel}:`);
-    node.alternative.visit(this);
+    if (node.alternative) {
+      emit(`${ifFalseLabel}:`);
+      node.alternative.visit(this);
+    }
     emit(`${endIfLabel}:`);
   }
 

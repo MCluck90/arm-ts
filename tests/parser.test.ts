@@ -14,6 +14,7 @@ import {
   GreaterThan,
   GreaterThanOrEqual,
   Id,
+  If,
   Integer,
   LessThan,
   LessThanOrEqual,
@@ -297,6 +298,50 @@ test('Can parse comparison operators', () => {
     new Equal(
       new LessThanOrEqual(new Integer(1), new Integer(2)),
       new Boolean(true)
+    ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse if statements', () => {
+  const source = `
+    if (condition) {
+      true;
+    } else {
+      false;
+    }
+
+    if (condition) {
+      true;
+    }
+
+    if (condition) {
+      true;
+    } else if (alternative) {
+      true;
+    } else {
+      false;
+    }
+  `;
+  const expected = new Block([
+    new If(
+      new Id('condition'),
+      new Block([new Boolean(true)]),
+      new Block([new Boolean(false)])
+    ),
+
+    new If(new Id('condition'), new Block([new Boolean(true)]), null),
+
+    new If(
+      new Id('condition'),
+      new Block([new Boolean(true)]),
+      new If(
+        new Id('alternative'),
+        new Block([new Boolean(true)]),
+        new Block([new Boolean(false)])
+      )
     ),
   ]);
   const result = parser.parseStringToCompletion(source);

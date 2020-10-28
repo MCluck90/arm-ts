@@ -317,7 +317,7 @@ export const ifStatement = IF.and(LEFT_PAREN)
   .and(expression)
   .bind((conditional) =>
     RIGHT_PAREN.and(statement).bind((consequence) =>
-      ELSE.and(statement).bind((alternative) =>
+      maybe(ELSE.and(statement)).bind((alternative) =>
         constant(new If(conditional, consequence, alternative))
       )
     )

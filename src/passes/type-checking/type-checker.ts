@@ -165,7 +165,9 @@ export class TypeChecker implements Visitor<Type> {
   visitIf(node: If): Type {
     node.conditional.visit(this);
     node.consequence.visit(this);
-    node.alternative.visit(this);
+    if (node.alternative) {
+      node.alternative.visit(this);
+    }
     return new VoidType();
   }
 

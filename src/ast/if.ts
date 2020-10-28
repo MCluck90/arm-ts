@@ -5,7 +5,7 @@ export class If implements AST {
   constructor(
     public conditional: AST,
     public consequence: AST,
-    public alternative: AST
+    public alternative: AST | null
   ) {}
 
   visit<T>(visitor: Visitor<T>) {
@@ -13,11 +13,20 @@ export class If implements AST {
   }
 
   equals(other: AST): boolean {
+    if (!(other instanceof If)) {
+      return false;
+    }
+
+    let alternativesMatch =
+      this.alternative === null && other.alternative === null;
+    if (this.alternative !== null && other.alternative !== null) {
+      alternativesMatch = this.alternative.equals(other.alternative);
+    }
+
     return (
-      other instanceof If &&
       this.conditional.equals(other.conditional) &&
       this.consequence.equals(other.consequence) &&
-      this.alternative.equals(other.alternative)
+      alternativesMatch
     );
   }
 }
