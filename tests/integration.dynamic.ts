@@ -4,9 +4,9 @@ import { DynamicCodeGenerator } from '../src/passes/codegen';
 const ast = parser.parseStringToCompletion(`
   function assert(condition) {
     if (condition) {
-      putchar(untag('.'));
+      putchar('.');
     } else {
-      putchar(untag('F'));
+      putchar('F');
     }
   }
 
