@@ -22,7 +22,6 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Null,
   NumberType,
   Return,
   Subtract,
@@ -194,10 +193,9 @@ test('Can parse booleans', () => {
   expect(result.equals(expected)).toBe(true);
 });
 
-test('Can parse null and undefined', () => {
+test('Can parse undefined', () => {
   const source = `
     function main() {
-      null;
       undefined;
     }
   `;
@@ -205,7 +203,7 @@ test('Can parse null and undefined', () => {
     new Function(
       'main',
       new FunctionType(new Map(), new NumberType()),
-      new Block([new Null(), new Undefined()])
+      new Block([new Undefined()])
     ),
   ]);
   const result = parser.parseStringToCompletion(source);

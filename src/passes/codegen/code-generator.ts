@@ -21,7 +21,6 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Null,
   Return,
   Subtract,
   Undefined,
@@ -289,10 +288,6 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  cmp r0, r1`);
     emit(`  moveq r0, #0`);
     emit(`  movne r0, #1`);
-  }
-
-  visitNull(_node: Null) {
-    emit(`  mov r0, #0`);
   }
 
   visitReturn(node: Return) {

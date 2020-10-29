@@ -11,7 +11,6 @@ export * from './id';
 export * from './if';
 export * from './integer';
 export * from './length';
-export * from './null';
 export * from './operators';
 export * from './return';
 export * from './types';

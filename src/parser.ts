@@ -23,7 +23,6 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Null,
   NumberType,
   Return,
   Subtract,
@@ -161,7 +160,6 @@ export const FALSE = token(/false\b/y).map(() => new Boolean(false));
 export const FOR = token(/for\b/y);
 export const FUNCTION = token(/function\b/y);
 export const IF = token(/if\b/y);
-export const NULL = token(/null\b/y).map(() => new Null());
 export const NUMBER = token(/number\b/y);
 export const RETURN = token(/return\b/y);
 export const TRUE = token(/true\b/y).map(() => new Boolean(true));
@@ -265,7 +263,7 @@ export const assignment = ID.bind((name) =>
 
 export const boolean = TRUE.or(FALSE);
 
-export const scalar = boolean.or(UNDEFINED).or(NULL).or(id).or(INTEGER);
+export const scalar = boolean.or(UNDEFINED).or(id).or(INTEGER);
 
 export const atom = call
   .or(arrayLiteral)

@@ -24,7 +24,6 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Null,
   NumberType,
   Return,
   Subtract,
@@ -211,10 +210,6 @@ export class TypeChecker implements Visitor<Type> {
     assertType(new NumberType(), node.left.visit(this));
     assertType(new NumberType(), node.right.visit(this));
     return new BooleanType();
-  }
-
-  visitNull(_node: Null): Type {
-    return new VoidType();
   }
 
   visitReturn(node: Return): Type {

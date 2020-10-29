@@ -79,8 +79,7 @@ function booleans() {
   assert(!false);
 }
 
-function nullAndUndefined() {
-  assert(null == null);
+function useUndefined() {
   assert(undefined == undefined);
 }
 
@@ -150,7 +149,7 @@ function main() {
 
   chainedAssignments();
   booleans();
-  nullAndUndefined();
+  useUndefined();
   arrays();
   comparisons();
   chainIfElse();

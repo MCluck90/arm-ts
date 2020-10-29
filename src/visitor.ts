@@ -21,7 +21,6 @@ import {
   Multiply,
   Not,
   NotEqual,
-  Null,
   Return,
   Subtract,
   Undefined,
@@ -52,7 +51,6 @@ export interface Visitor<T> {
   visitMultiply(node: Multiply): T;
   visitNot(node: Not): T;
   visitNotEqual(node: NotEqual): T;
-  visitNull(node: Null): T;
   visitReturn(node: Return): T;
   visitSubtract(node: Subtract): T;
   visitUndefined(node: Undefined): T;
