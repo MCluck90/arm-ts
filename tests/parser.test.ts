@@ -6,7 +6,6 @@ import {
   Block,
   Boolean,
   BooleanType,
-  Call,
   Character,
   Equal,
   Function,
@@ -23,6 +22,7 @@ import {
   Not,
   NotEqual,
   NumberType,
+  Program,
   Return,
   Subtract,
   Undefined,
@@ -102,7 +102,7 @@ test('Can parse factorial function', () => {
       return result;
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'factorial',
       new FunctionType(new Map([['n', new NumberType()]]), new NumberType()),
@@ -135,7 +135,7 @@ test('Can parse a character', () => {
       " ";
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'outputChar',
       new FunctionType(new Map(), new NumberType()),
@@ -160,7 +160,7 @@ test('Can chain assignments', () => {
       a = b = c = d;
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'main',
       new FunctionType(new Map(), new NumberType()),
@@ -181,7 +181,7 @@ test('Can parse booleans', () => {
       false;
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'main',
       new FunctionType(new Map(), new NumberType()),
@@ -199,7 +199,7 @@ test('Can parse undefined', () => {
       undefined;
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'main',
       new FunctionType(new Map(), new NumberType()),
@@ -216,7 +216,7 @@ test('Can parse arrays', () => {
     var a = [1, 2, '3'];
     a[1];
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Var(
       'a',
       new ArrayLiteral([new Integer(1), new Integer(2), new Character('3')])
@@ -244,7 +244,7 @@ test('Can parse type annotations in function signatures', () => {
 
     function doNothing(): void { }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new Function(
       'identity',
       new FunctionType(new Map([['x', new NumberType()]]), new NumberType()),
@@ -292,7 +292,7 @@ test('Can parse comparison operators', () => {
     1 < 2 == true;
     1 <= 2 == true;
   `;
-  const expected = new Block([
+  const expected = new Program([
     new LessThan(new Integer(1), new Integer(2)),
     new GreaterThan(new Integer(1), new Integer(2)),
     new LessThanOrEqual(new Integer(1), new Integer(2)),
@@ -328,7 +328,7 @@ test('Can parse if statements', () => {
       false;
     }
   `;
-  const expected = new Block([
+  const expected = new Program([
     new If(
       new Id('condition'),
       new Block([new Boolean(true)]),
@@ -356,7 +356,7 @@ test('Can parse the built-in `length` function', () => {
   const source = `
     length(1);
   `;
-  const expected = new Block([new Length(new Integer(1))]);
+  const expected = new Program([new Length(new Integer(1))]);
 
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);

@@ -24,6 +24,7 @@ import {
   Not,
   NotEqual,
   NumberType,
+  Program,
   Return,
   Subtract,
   Type,
@@ -402,4 +403,4 @@ statement.parse = statementParser.parse;
 
 export const parser = ignored
   .and(zeroOrMore(statement))
-  .map((statements) => new Block(statements));
+  .map((statements) => new Program(statements));

@@ -21,6 +21,7 @@ import {
   Multiply,
   Not,
   NotEqual,
+  Program,
   Return,
   Subtract,
   Undefined,
@@ -341,6 +342,10 @@ export class DynamicCodeGenerator implements Visitor<void> {
     emit(`  cmp r0, r1`);
     emit(`  moveq r0, #${trueBitPattern}`);
     emit(`  movne r0, #${falseBitPattern}`);
+  }
+
+  visitProgram(node: Program) {
+    node.statements.forEach((statement) => statement.visit(this));
   }
 
   visitReturn(node: Return) {
