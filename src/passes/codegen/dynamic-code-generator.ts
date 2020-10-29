@@ -122,13 +122,19 @@ export class DynamicCodeGenerator implements Visitor<void> {
   }
 
   visitCall(node: Call) {
+    // TODO: Make this smarter
+    const isCFunction = ['putchar'].includes(node.callee);
     switch (node.args.length) {
       case 0:
         emit(`  bl ${node.callee}`);
         break;
 
       case 1:
-        node.args[0].visit(this);
+        if (isCFunction) {
+          new Untag(node.args[0]).visit(this);
+        } else {
+          node.args[0].visit(this);
+        }
         emit(`  bl ${node.callee}`);
         break;
 
@@ -137,6 +143,9 @@ export class DynamicCodeGenerator implements Visitor<void> {
       case 4:
         emit(`  sub sp, sp, #16`);
         node.args.forEach((arg, i) => {
+          if (isCFunction) {
+            new Untag(node.args[0]).visit(this);
+          }
           arg.visit(this);
           emit(`  str r0, [sp, #${4 * i}]`);
         });

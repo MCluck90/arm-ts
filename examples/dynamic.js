@@ -1,10 +1,10 @@
 function main() {
   var x = 5;
   if (x == 5) {
-    putchar(untag('T'));
+    putchar('T');
   } else if (x == undefined) {
-    putchar(untag('F'));
+    putchar('F');
   } else {
-    putchar(untag('F'));
+    putchar('F');
   }
 }
