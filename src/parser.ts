@@ -17,6 +17,7 @@ import {
   If,
   InfixOperatorConstructor,
   Integer,
+  Length,
   LessThan,
   LessThanOrEqual,
   Multiply,
@@ -180,8 +181,8 @@ export const LEFT_PAREN = token(/[(]/y);
 export const RIGHT_PAREN = token(/[)]/y);
 export const OPEN_TYPE_BRACKET = token(/[<]/y);
 export const CLOSE_TYPE_BRACKET = token(/[>]/y);
-export const SINGLE_QUOTE = token(/[']/y);
-export const DOUBLE_QUOTE = token(/["]/y);
+export const SINGLE_QUOTE = regexp(/[']/y);
+export const DOUBLE_QUOTE = regexp(/["]/y);
 
 export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
@@ -236,11 +237,17 @@ export const args = expression
   )
   .or(constant([] as AST[]));
 
-export const call = ID.bind((callee) =>
-  LEFT_PAREN.and(
-    args.bind((args) => RIGHT_PAREN.and(constant(new Call(callee, args))))
-  )
-);
+export const call = token(/length/y)
+  .and(LEFT_PAREN)
+  .and(expression)
+  .bind((expression) => RIGHT_PAREN.and(constant(new Length(expression))))
+  .or(
+    ID.bind((callee) =>
+      LEFT_PAREN.and(
+        args.bind((args) => RIGHT_PAREN.and(constant(new Call(callee, args))))
+      )
+    )
+  );
 
 export const arrayLiteral = LEFT_BRACKET.and(args).bind((args) =>
   RIGHT_BRACKET.and(constant(new ArrayLiteral(args)))

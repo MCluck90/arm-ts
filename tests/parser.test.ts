@@ -16,6 +16,7 @@ import {
   Id,
   If,
   Integer,
+  Length,
   LessThan,
   LessThanOrEqual,
   Multiply,
@@ -131,6 +132,8 @@ test('Can parse a character', () => {
       "A";
       '"';
       "'";
+      ' ';
+      " ";
     }
   `;
   const expected = new Block([
@@ -142,6 +145,8 @@ test('Can parse a character', () => {
         new Character('A'),
         new Character('"'),
         new Character("'"),
+        new Character(' '),
+        new Character(' '),
       ])
     ),
   ]);
@@ -344,6 +349,17 @@ test('Can parse if statements', () => {
       )
     ),
   ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse the built-in `length` function', () => {
+  const source = `
+    length(1);
+  `;
+  const expected = new Block([new Length(new Integer(1))]);
+
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
