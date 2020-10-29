@@ -1,0 +1,13 @@
+#!/bin/bash
+# Will compile and execute ARM assembly
+# Run in WSL
+
+if [[ "$OSTYPE" == "cygin" || "$OSTYPE" == "msys" ]]; then
+  wsl ./run-dynamic $1
+else
+  npm run --silent start -- --dynamic $1 > __program.s &&
+  arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
+  qemu-arm ./__out &&
+  rm ./__out &&
+  rm ./__program.s
+fi

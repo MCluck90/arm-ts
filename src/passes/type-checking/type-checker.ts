@@ -29,6 +29,7 @@ import {
   Subtract,
   Type,
   Undefined,
+  Untag,
   Var,
   VoidType,
   While,
@@ -228,7 +229,11 @@ export class TypeChecker implements Visitor<Type> {
     return new NumberType();
   }
 
-  visitUndefined(node: Undefined): Type {
+  visitUndefined(_node: Undefined): Type {
+    return new VoidType();
+  }
+
+  visitUntag(_node: Untag): Type {
     return new VoidType();
   }
 

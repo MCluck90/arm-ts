@@ -28,6 +28,7 @@ import {
   Subtract,
   Type,
   Undefined,
+  Untag,
   Var,
   VoidType,
   While,
@@ -235,10 +236,16 @@ export const args = expression
   )
   .or(constant([] as AST[]));
 
-export const call = token(/length/y)
-  .and(LEFT_PAREN)
-  .and(expression)
-  .bind((expression) => RIGHT_PAREN.and(constant(new Length(expression))))
+export const call = token(/length|untag/y)
+  .bind((name) =>
+    LEFT_PAREN.and(expression).bind((expression) =>
+      RIGHT_PAREN.and(
+        constant(
+          name === 'length' ? new Length(expression) : new Untag(expression)
+        )
+      )
+    )
+  )
   .or(
     ID.bind((callee) =>
       LEFT_PAREN.and(

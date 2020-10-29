@@ -32,38 +32,55 @@ import { emit } from './emit';
 import { Label } from './label';
 import { Visitor } from '../../visitor';
 
-export class CodeGenerator implements Visitor<void> {
+const trueBitPattern = 0b111;
+const falseBitPattern = 0b110;
+const undefinedBitPattern = 0b010;
+
+const tagBitMask = 0b11;
+const falsyTag = 0b10;
+const arrayTag = 0b01;
+
+const toSmallInteger = (n: number) => n << 2;
+
+export class DynamicCodeGenerator implements Visitor<void> {
   constructor(
     public locals: Map<string, number> = new Map(),
     public nextLocalOffset: number = 0
   ) {}
 
+  private emitCompareFalsy() {
+    emit(`  cmp r0, #0`);
+    emit(`  andne r0, r0, #${tagBitMask}`);
+    emit(`  cmpne r0, #${falsyTag}`);
+  }
+
   visitArrayLiteral(node: ArrayLiteral) {
     const { length } = node.elements;
+    emit(`  push {r4, ip}`);
     emit(`  ldr r0, =${4 * (length + 1)}`);
     emit(`  bl malloc`);
-    emit(`  push {r4, ip}`);
     emit(`  mov r4, r0`);
-    emit(`  ldr r0, =${length}`);
+    emit(`  ldr r0, =${toSmallInteger(length)}`);
     emit(`  str r0, [r4]`);
     node.elements.forEach((element, i) => {
       element.visit(this);
       emit(`  str r0, [r4, #${4 * (i + 1)}]`);
     });
     emit(`  mov r0, r4`);
+    emit(`  orr r0, r0, #${arrayTag}`);
     emit(`  pop {r4, ip}`);
   }
 
   visitArrayLookup(node: ArrayLookup) {
     node.array.visit(this);
+    emit(`  bic r0, r0, #${arrayTag}`); // Remove tag
     emit(`  push {r0, ip}`);
     node.index.visit(this);
     emit(`  pop {r1, ip}`);
-    emit(`  ldr r2, [r1]`);
+    // r0 = index, r1 = array, r2 = array length
+    emit(`  ldr r2, [r1], #4`);
     emit(`  cmp r0, r2`);
-    emit(`  movhs r0, #0`);
-    emit(`  addlo r1, r1, #4`);
-    emit(`  lsllo r0, r0, #2`);
+    emit(`  movhs r0, #${undefinedBitPattern}`);
     emit(`  ldrlo r0, [r1, r0]`);
   }
 
@@ -72,7 +89,14 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  push {r0, ip}`);
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
-    emit(`  add r0, r0, r1`);
+
+    // Are both small integers?
+    emit(`  orr r2, r0, r1`);
+    emit(`  and r2, r2, #${tagBitMask}`);
+    emit(`  cmp r2, #0`);
+
+    emit(`  addeq r0, r1, r0`);
+    emit(`  movne r0, #${undefinedBitPattern}`);
   }
 
   visitAssign(node: Assign) {
@@ -90,7 +114,11 @@ export class CodeGenerator implements Visitor<void> {
   }
 
   visitBoolean(node: Boolean) {
-    emit(`  mov r0, #${+node.value}`);
+    if (node.value) {
+      emit(`  mov r0, #${trueBitPattern}`);
+    } else {
+      emit(`  mov r0, #${falseBitPattern}`);
+    }
   }
 
   visitCall(node: Call) {
@@ -122,7 +150,7 @@ export class CodeGenerator implements Visitor<void> {
   }
 
   visitCharacter(node: Character) {
-    emit(`  ldr r0, =${node.value.charCodeAt(0)}`);
+    emit(`  ldr r0, =${toSmallInteger(node.value.charCodeAt(0))}`);
   }
 
   visitDivide(node: Divide) {
@@ -130,7 +158,14 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  push {r0, ip}`);
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
-    emit(`  udiv r0, r0, r1`);
+
+    // Are both small integers?
+    emit(`  orr r2, r0, r1`);
+    emit(`  and r2, r2, #${tagBitMask}`);
+    emit(`  cmp r2, #0`);
+
+    emit(`  udiveq r0, r1, r0`);
+    emit(`  movne r0, #${undefinedBitPattern}`);
   }
 
   visitEqual(node: Equal) {
@@ -139,8 +174,8 @@ export class CodeGenerator implements Visitor<void> {
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
     emit(`  cmp r0, r1`);
-    emit(`  moveq r0, #1`);
-    emit(`  movne r0, #0`);
+    emit(`  moveq r0, #${trueBitPattern}`);
+    emit(`  movne r0, #${falseBitPattern}`);
   }
 
   visitFunction(node: Function) {
@@ -174,7 +209,7 @@ export class CodeGenerator implements Visitor<void> {
 
   private functionEpilogue() {
     emit(`  mov sp, fp`);
-    emit(`  mov r0, #0`);
+    emit(`  mov r0, #${undefinedBitPattern}`);
     emit(`  pop {fp, pc}`);
   }
 
@@ -186,7 +221,7 @@ export class CodeGenerator implements Visitor<void> {
     params.forEach((parameter, i) => {
       locals.set(parameter, 4 * i - maxOffset);
     });
-    return new CodeGenerator(locals, -maxOffset - 4);
+    return new DynamicCodeGenerator(locals, -maxOffset - 4);
   }
 
   visitGreaterThan(node: GreaterThan) {
@@ -222,7 +257,7 @@ export class CodeGenerator implements Visitor<void> {
     const ifFalseLabel = new Label();
     const endIfLabel = new Label();
     node.conditional.visit(this);
-    emit(`  cmp r0, #0`);
+    this.emitCompareFalsy();
     if (node.alternative) {
       emit(`  beq ${ifFalseLabel}`);
     } else {
@@ -238,12 +273,12 @@ export class CodeGenerator implements Visitor<void> {
   }
 
   visitInteger(node: Integer) {
-    emit(`  ldr r0, =${node.value}`);
+    emit(`  ldr r0, =${toSmallInteger(node.value)}`);
   }
 
   visitLength(node: Length) {
     node.array.visit(this);
-    emit(`  ldr r0, [r0, #0]`);
+    emit(`  ldr r0, [r0, #-1]`);
   }
 
   visitLessThan(node: LessThan) {
@@ -271,14 +306,22 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  push {r0, ip}`);
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
-    emit(`  mul r0, r0, r1`);
+
+    // Are both small integers?
+    emit(`  orr r2, r0, r1`);
+    emit(`  and r2, r2, #${tagBitMask}`);
+    emit(`  cmp r2, #0`);
+
+    emit(`  muleq r0, r1, r0`);
+    emit(`  lsr r0, r0, #2`);
+    emit(`  movne r0, #${undefinedBitPattern}`);
   }
 
   visitNot(node: Not) {
     node.term.visit(this);
-    emit(`  cmp r0, #0`);
-    emit(`  moveq r0, #1`);
-    emit(`  movne r0, #0`);
+    this.emitCompareFalsy();
+    emit(`  moveq r0, #${trueBitPattern}`);
+    emit(`  movne r0, #${falseBitPattern}`);
   }
 
   visitNotEqual(node: NotEqual) {
@@ -287,8 +330,8 @@ export class CodeGenerator implements Visitor<void> {
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
     emit(`  cmp r0, r1`);
-    emit(`  moveq r0, #0`);
-    emit(`  movne r0, #1`);
+    emit(`  moveq r0, #${trueBitPattern}`);
+    emit(`  movne r0, #${falseBitPattern}`);
   }
 
   visitReturn(node: Return) {
@@ -302,15 +345,23 @@ export class CodeGenerator implements Visitor<void> {
     emit(`  push {r0, ip}`);
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
-    emit(`  sub r0, r1, r0`);
+
+    // Are both small integers?
+    emit(`  orr r2, r0, r1`);
+    emit(`  and r2, r2, #${tagBitMask}`);
+    emit(`  cmp r2, #0`);
+
+    emit(`  subeq r0, r1, r0`);
+    emit(`  movne r0, #${undefinedBitPattern}`);
   }
 
   visitUndefined(_node: Undefined) {
-    emit(`  mov r0, #0`);
+    emit(`  mov r0, #${undefinedBitPattern}`);
   }
 
-  visitUntag(_node: Untag) {
-    // No-op. Only useful in dynamic-mode
+  visitUntag(node: Untag) {
+    node.value.visit(this);
+    emit(`  lsr r0, r0, #2`);
   }
 
   visitVar(node: Var) {
@@ -327,7 +378,7 @@ export class CodeGenerator implements Visitor<void> {
 
     emit(`${loopStart}:`);
     node.conditional.visit(this);
-    emit(`  cmp r0, #0`);
+    this.emitCompareFalsy();
     emit(`  beq ${loopEnd}`);
     node.body.visit(this);
     emit(`  b ${loopStart}`);

@@ -15,5 +15,6 @@ export * from './operators';
 export * from './return';
 export * from './types';
 export * from './undefined';
+export * from './untag';
 export * from './var';
 export * from './while';

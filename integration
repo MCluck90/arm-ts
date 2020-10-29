@@ -5,9 +5,18 @@
 if [[ "$OSTYPE" == "msys" ]]; then
   wsl ./integration
 else
-  npm run --silent integration > __program.s &&
-  arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
-  qemu-arm ./__out &&
-  rm ./__out &&
-  rm ./__program.s
+  function runTests {
+    npm run --silent "integration:$1" > __program.s &&
+    arm-linux-gnueabihf-gcc -static ./__program.s -o ./__out &&
+    qemu-arm ./__out &&
+    rm ./__out &&
+    rm ./__program.s
+  }
+
+  echo Static
+  runTests static
+
+  echo -e "\n"
+  echo Dynamic
+  runTests dynamic
 fi

@@ -24,6 +24,7 @@ import {
   Return,
   Subtract,
   Undefined,
+  Untag,
   Var,
   While,
 } from './ast';
@@ -54,6 +55,7 @@ export interface Visitor<T> {
   visitReturn(node: Return): T;
   visitSubtract(node: Subtract): T;
   visitUndefined(node: Undefined): T;
+  visitUntag(node: Untag): T;
   visitVar(node: Var): T;
   visitWhile(node: While): T;
 }
