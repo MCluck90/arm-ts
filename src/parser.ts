@@ -233,7 +233,9 @@ export const expression: Parser<AST> = Parser.error(
 
 export const args = expression
   .bind((arg) =>
-    zeroOrMore(COMMA.and(expression)).bind((args) => constant([arg, ...args]))
+    zeroOrMore(COMMA.and(expression)).bind((args) =>
+      maybe(COMMA).and(constant([arg, ...args]))
+    )
   )
   .or(constant([] as AST[]));
 
