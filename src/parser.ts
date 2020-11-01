@@ -9,6 +9,7 @@ import {
   Call,
   Divide,
   Equal,
+  For,
   Function,
   FunctionType,
   GreaterThan,
@@ -356,6 +357,23 @@ export const assignmentStatement = assignment.bind((assign) =>
   SEMICOLON.and(constant(assign))
 );
 
+export const forStatement = FOR.and(LEFT_PAREN)
+  .and(varStatement.or(assignmentStatement).or(SEMICOLON.and(constant(null))))
+  .bind((initializer) =>
+    expression.bind((conditional) =>
+      SEMICOLON.and(
+        expression
+          .or(assignment)
+          .or(constant(null))
+          .bind((postBody) =>
+            RIGHT_PAREN.and(statement).bind((body) =>
+              constant(new For(initializer, conditional, postBody, body))
+            )
+          )
+      )
+    )
+  );
+
 export const blockStatement = LEFT_BRACE.and(
   zeroOrMore(statement)
 ).bind((statements) => RIGHT_BRACE.and(constant(new Block(statements))));
@@ -396,6 +414,7 @@ export const statementParser = returnStatement
   .or(functionStatement)
   .or(ifStatement)
   .or(whileStatement)
+  .or(forStatement)
   .or(varStatement)
   .or(assignmentStatement)
   .or(blockStatement)

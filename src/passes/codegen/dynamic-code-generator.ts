@@ -9,6 +9,7 @@ import {
   Character,
   Divide,
   Equal,
+  For,
   Function,
   GreaterThan,
   GreaterThanOrEqual,
@@ -186,6 +187,24 @@ export class DynamicCodeGenerator implements Visitor<void> {
     emit(`  cmp r0, r1`);
     emit(`  moveq r0, #${trueBitPattern}`);
     emit(`  movne r0, #${falseBitPattern}`);
+  }
+
+  visitFor(node: For) {
+    node.initializer?.visit(this);
+
+    const startLoop = new Label();
+    const endLoop = new Label();
+
+    emit(`${startLoop}:`);
+
+    node.conditional.visit(this);
+    this.emitCompareFalsy();
+    emit(`  beq ${endLoop}`);
+    node.body.visit(this);
+    node.postBodyStatement?.visit(this);
+    emit(`  b ${startLoop}`);
+
+    emit(`${endLoop}:`);
   }
 
   visitFunction(node: Function) {

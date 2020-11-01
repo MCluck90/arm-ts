@@ -6,6 +6,7 @@ export * from './block';
 export * from './boolean';
 export * from './call';
 export * from './character';
+export * from './for';
 export * from './function';
 export * from './id';
 export * from './if';

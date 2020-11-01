@@ -114,6 +114,15 @@ const ast = parser.parseStringToCompletion(
     }
   }
 
+  function forStatement() {
+    for (var i = 0; i < 3; i = i + 1) {
+      assert(true);
+    }
+    var x = 0;
+    for (; x < 3; x = x + 1) { }
+    assert(x == 3);
+  }
+
   function main() {
     assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
@@ -153,6 +162,7 @@ const ast = parser.parseStringToCompletion(
     arrays();
     comparisons();
     chainIfElse();
+    forStatement();
   }
   `
 );

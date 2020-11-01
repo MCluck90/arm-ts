@@ -1,4 +1,5 @@
 import {
+  Add,
   ArrayLiteral,
   ArrayLookup,
   ArrayType,
@@ -6,8 +7,10 @@ import {
   Block,
   Boolean,
   BooleanType,
+  Call,
   Character,
   Equal,
+  For,
   Function,
   FunctionType,
   GreaterThan,
@@ -358,6 +361,27 @@ test('Can parse the built-in `length` function', () => {
   `;
   const expected = new Program([new Length(new Integer(1))]);
 
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse `for` statements', () => {
+  const source = `
+    for (; true;) {}
+    for (var i = 0; i < 10; i = i + 1) {
+      putchar(i);
+    }
+  `;
+  const expected = new Program([
+    new For(null, new Boolean(true), null, new Block([])),
+    new For(
+      new Var('i', new Integer(0)),
+      new LessThan(new Id('i'), new Integer(10)),
+      new Assign('i', new Add(new Id('i'), new Integer(1))),
+      new Block([new Call('putchar', [new Id('i')])])
+    ),
+  ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);

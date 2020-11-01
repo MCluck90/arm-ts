@@ -11,6 +11,7 @@ import {
   Character,
   Divide,
   Equal,
+  For,
   Function,
   FunctionType,
   GreaterThan,
@@ -130,6 +131,14 @@ export class TypeChecker implements Visitor<Type> {
     const rightType = node.right.visit(this);
     assertType(leftType, rightType);
     return new BooleanType();
+  }
+
+  visitFor(node: For): Type {
+    node.initializer?.visit(this);
+    node.conditional.visit(this);
+    node.postBodyStatement?.visit(this);
+    node.body.visit(this);
+    return new VoidType();
   }
 
   visitFunction(node: Function): Type {

@@ -9,6 +9,7 @@ import {
   Character,
   Divide,
   Equal,
+  For,
   Function,
   GreaterThan,
   GreaterThanOrEqual,
@@ -41,6 +42,7 @@ export interface Visitor<T> {
   visitCharacter(node: Character): T;
   visitDivide(node: Divide): T;
   visitEqual(node: Equal): T;
+  visitFor(node: For): T;
   visitFunction(node: Function): T;
   visitGreaterThan(node: GreaterThan): T;
   visitGreaterThanOrEqual(node: GreaterThanOrEqual): T;

@@ -20,10 +20,18 @@ const ast = parser.parseStringToCompletion(`
     }
   }
 
+  function forStatement() {
+    for (; undefined; ) {
+      assert(false);
+    }
+    assert(true);
+  }
+
   function main() {
     var a = [];
     assert(a[1] + 2 == undefined);
     assert(!isBoolean(undefined));
+    forStatement();
   }
   `);
 
