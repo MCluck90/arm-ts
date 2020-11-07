@@ -28,6 +28,8 @@ import {
   NumberType,
   Program,
   Return,
+  String,
+  StringType,
   Subtract,
   Type,
   Undefined,
@@ -68,6 +70,8 @@ export class TypeChecker implements Visitor<Type> {
     const type = node.array.visit(this);
     if (type instanceof ArrayType) {
       return type.element;
+    } else if (type instanceof StringType) {
+      return new NumberType();
     } else {
       throw new TypeError(`Expected an array, but got ${type}`);
     }
@@ -187,7 +191,7 @@ export class TypeChecker implements Visitor<Type> {
 
   visitLength(node: Length): Type {
     const type = node.array.visit(this);
-    if (type instanceof ArrayType) {
+    if (type instanceof ArrayType || type instanceof StringType) {
       return new NumberType();
     } else {
       throw new TypeError(`Expected an array, but got ${type}`);
@@ -236,6 +240,10 @@ export class TypeChecker implements Visitor<Type> {
     } else {
       throw new TypeError('Encountered return statement outside any function');
     }
+  }
+
+  visitString(_node: String): Type {
+    return new StringType();
   }
 
   visitSubtract(node: Subtract): Type {

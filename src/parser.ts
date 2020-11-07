@@ -27,6 +27,8 @@ import {
   NumberType,
   Program,
   Return,
+  String,
+  StringType,
   Subtract,
   Type,
   Undefined,
@@ -165,6 +167,7 @@ export const FUNCTION = token(/function\b/y);
 export const IF = token(/if\b/y);
 export const NUMBER = token(/number\b/y);
 export const RETURN = token(/return\b/y);
+export const STRING_TYPE = token(/string\b/y);
 export const TRUE = token(/true\b/y).map(() => new Boolean(true));
 export const UNDEFINED = token(/undefined\b/y).map(() => new Undefined());
 export const VAR = token(/var\b/y);
@@ -184,6 +187,7 @@ export const OPEN_TYPE_BRACKET = token(/[<]/y);
 export const CLOSE_TYPE_BRACKET = token(/[>]/y);
 export const SINGLE_QUOTE = regexp(/[']/y);
 export const DOUBLE_QUOTE = regexp(/["]/y);
+export const BACKTICK = regexp(/[`]/y);
 
 export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
@@ -196,6 +200,7 @@ export const arrayType: Parser<Type> = Parser.error(
 export const type = VOID.map((_) => new VoidType())
   .or(BOOLEAN.map((_) => new BooleanType()))
   .or(NUMBER.map((_) => new NumberType()))
+  .or(STRING_TYPE.map((_) => new StringType()))
   .or(arrayType);
 
 arrayType.parse = ARRAY.and(OPEN_TYPE_BRACKET)
@@ -211,6 +216,10 @@ export const CHARACTER = SINGLE_QUOTE.and(characterWithoutSingleQuote)
       DOUBLE_QUOTE.and(constant(new Character(char)))
     )
   );
+
+export const STRING = BACKTICK.and(regexp(/[^`]*/y)).bind((value) =>
+  BACKTICK.and(constant(new String(value)))
+);
 
 export const ID = token(/[a-zA-Z_][a-zA-Z0-9_]*/y);
 export const id = ID.map((x) => new Id(x));
@@ -282,6 +291,7 @@ export const atom = call
   .or(assignment)
   .or(scalar)
   .or(CHARACTER)
+  .or(STRING)
   .or(LEFT_PAREN.and(expression).bind((e) => RIGHT_PAREN.and(constant(e))));
 
 export const unary = maybe(NOT).bind((not) =>

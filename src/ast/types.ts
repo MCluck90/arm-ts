@@ -71,3 +71,13 @@ export class FunctionType implements Type {
     return `(${params}) => ${this.returnType.toString()}`;
   }
 }
+
+export class StringType implements Type {
+  equals(other: Type) {
+    return other instanceof StringType;
+  }
+
+  toString() {
+    return 'string';
+  }
+}

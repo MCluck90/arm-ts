@@ -27,6 +27,7 @@ import {
   NumberType,
   Program,
   Return,
+  String,
   Subtract,
   Undefined,
   Var,
@@ -381,6 +382,22 @@ test('Can parse `for` statements', () => {
       new Assign('i', new Add(new Id('i'), new Integer(1))),
       new Block([new Call('putchar', [new Id('i')])])
     ),
+  ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse strings', () => {
+  const source = `
+    \`a\`;
+    \`Hello world\`;
+    \`\`;
+  `;
+  const expected = new Program([
+    new String('a'),
+    new String('Hello world'),
+    new String(''),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);

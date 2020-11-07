@@ -123,6 +123,15 @@ const ast = parser.parseStringToCompletion(
     assert(x == 3);
   }
 
+  function strings() {
+    var hello = \`Hello world\`;
+    assert(length(hello) == 11);
+  }
+
+  function stringTypes(str: string) {
+    assert(true);
+  }
+
   function main() {
     assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
@@ -163,6 +172,8 @@ const ast = parser.parseStringToCompletion(
     comparisons();
     chainIfElse();
     forStatement();
+    strings();
+    stringTypes(\`test\`);
   }
   `
 );

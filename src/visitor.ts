@@ -24,6 +24,7 @@ import {
   NotEqual,
   Program,
   Return,
+  String,
   Subtract,
   Undefined,
   Untag,
@@ -57,6 +58,7 @@ export interface Visitor<T> {
   visitNotEqual(node: NotEqual): T;
   visitProgram(node: Program): T;
   visitReturn(node: Return): T;
+  visitString(node: String): T;
   visitSubtract(node: Subtract): T;
   visitUndefined(node: Undefined): T;
   visitUntag(node: Untag): T;

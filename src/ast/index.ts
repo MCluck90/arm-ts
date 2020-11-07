@@ -15,6 +15,7 @@ export * from './length';
 export * from './operators';
 export * from './program';
 export * from './return';
+export * from './string';
 export * from './types';
 export * from './undefined';
 export * from './untag';

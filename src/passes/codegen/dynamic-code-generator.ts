@@ -24,6 +24,7 @@ import {
   NotEqual,
   Program,
   Return,
+  String,
   Subtract,
   Undefined,
   Untag,
@@ -371,6 +372,12 @@ export class DynamicCodeGenerator implements Visitor<void> {
     node.term.visit(this);
     emit(`  mov sp, fp`);
     emit(`  pop {fp, pc}`);
+  }
+
+  visitString(node: String) {
+    this.visitArrayLiteral(
+      new ArrayLiteral(node.value.split('').map((c) => new Character(c)))
+    );
   }
 
   visitSubtract(node: Subtract) {
