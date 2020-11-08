@@ -3,6 +3,7 @@ import {
   ArrayLiteral,
   ArrayLookup,
   ArrayType,
+  Asm,
   Assign,
   Block,
   Boolean,
@@ -403,6 +404,16 @@ multiline
     new String(''),
     new String('\nmultiline\n'),
   ]);
+  const result = parser.parseStringToCompletion(source);
+  expect(result).toEqual(expected);
+  expect(result.equals(expected)).toBe(true);
+});
+
+test('Can parse assembly directives', () => {
+  const source = `
+    asm\`add r0, r0, #1\`;
+  `;
+  const expected = new Program([new Asm('add r0, r0, #1')]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);

@@ -2,6 +2,7 @@ import {
   Add,
   ArrayLiteral,
   ArrayLookup,
+  Asm,
   Assign,
   Block,
   Boolean,
@@ -36,6 +37,7 @@ export interface Visitor<T> {
   visitArrayLiteral(node: ArrayLiteral): T;
   visitArrayLookup(node: ArrayLookup): T;
   visitAdd(node: Add): T;
+  visitAsm(node: Asm): T;
   visitAssign(node: Assign): T;
   visitBlock(node: Block): T;
   visitBoolean(node: Boolean): T;

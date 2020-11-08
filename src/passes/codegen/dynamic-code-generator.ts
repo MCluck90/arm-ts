@@ -2,6 +2,7 @@ import {
   Add,
   ArrayLiteral,
   ArrayLookup,
+  Asm,
   Assign,
   Block,
   Boolean,
@@ -100,6 +101,10 @@ export class DynamicCodeGenerator implements Visitor<void> {
 
     emit(`  addeq r0, r1, r0`);
     emit(`  movne r0, #${undefinedBitPattern}`);
+  }
+
+  visitAsm(node: Asm) {
+    emit(node.value);
   }
 
   visitAssign(node: Assign) {

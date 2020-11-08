@@ -132,6 +132,18 @@ const ast = parser.parseStringToCompletion(
     assert(true);
   }
 
+  function assembly() {
+    var x = 0;
+    assert(x == 0);
+    asm\`
+      ldr r0, =1
+      pop {r1, ip}
+      add r0, r0, r1
+      str r0, [fp, #-8]
+    \`;
+    assert(x == 1);
+  }
+
   function main() {
     assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
@@ -174,6 +186,7 @@ const ast = parser.parseStringToCompletion(
     forStatement();
     strings();
     stringTypes(\`test\`);
+    assembly();
   }
   `
 );

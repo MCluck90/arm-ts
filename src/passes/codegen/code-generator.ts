@@ -2,6 +2,7 @@ import {
   Add,
   ArrayLiteral,
   ArrayLookup,
+  Asm,
   Assign,
   Block,
   Boolean,
@@ -76,6 +77,10 @@ export class CodeGenerator implements Visitor<void> {
     node.right.visit(this);
     emit(`  pop {r1, ip}`);
     emit(`  add r0, r0, r1`);
+  }
+
+  visitAsm(node: Asm) {
+    emit(node.value);
   }
 
   visitAssign(node: Assign) {

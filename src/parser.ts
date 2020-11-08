@@ -3,6 +3,7 @@ import {
   ArrayLiteral,
   ArrayLookup,
   ArrayType,
+  Asm,
   Assign,
   Block,
   BooleanType,
@@ -285,10 +286,15 @@ export const boolean = TRUE.or(FALSE);
 
 export const scalar = boolean.or(UNDEFINED).or(id).or(INTEGER);
 
+export const assembly = regexp(/asm/y)
+  .and(STRING)
+  .bind((str) => constant(new Asm(str.value)));
+
 export const atom = call
   .or(arrayLiteral)
   .or(arrayLookup)
   .or(assignment)
+  .or(assembly)
   .or(scalar)
   .or(CHARACTER)
   .or(STRING)

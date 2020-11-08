@@ -3,6 +3,7 @@ import {
   ArrayLiteral,
   ArrayLookup,
   ArrayType,
+  Asm,
   Assign,
   Block,
   Boolean,
@@ -81,6 +82,10 @@ export class TypeChecker implements Visitor<Type> {
     assertType(new NumberType(), node.left.visit(this));
     assertType(new NumberType(), node.right.visit(this));
     return new NumberType();
+  }
+
+  visitAsm(_node: Asm): Type {
+    return new VoidType();
   }
 
   visitAssign(node: Assign): Type {

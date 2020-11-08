@@ -1,5 +1,6 @@
 export * from './array-literal';
 export * from './array-lookup';
+export * from './asm';
 export * from './assign';
 export * from './ast';
 export * from './block';
