@@ -393,11 +393,15 @@ test('Can parse strings', () => {
     \`a\`;
     \`Hello world\`;
     \`\`;
+    \`
+multiline
+\`;
   `;
   const expected = new Program([
     new String('a'),
     new String('Hello world'),
     new String(''),
+    new String('\nmultiline\n'),
   ]);
   const result = parser.parseStringToCompletion(source);
   expect(result).toEqual(expected);

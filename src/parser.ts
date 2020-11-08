@@ -217,7 +217,7 @@ export const CHARACTER = SINGLE_QUOTE.and(characterWithoutSingleQuote)
     )
   );
 
-export const STRING = BACKTICK.and(regexp(/[^`]*/y)).bind((value) =>
+export const STRING = BACKTICK.and(regexp(/[^`]*/sy)).bind((value) =>
   BACKTICK.and(constant(new String(value)))
 );
 
