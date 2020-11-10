@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { parser } from './parser';
 import { CodeGenerator, DynamicCodeGenerator } from './passes/codegen';
+import { preprocessor } from './passes/preprocessor';
 import { createLibCTypes, TypeChecker } from './passes/type-checking';
 
 if (process.argv.length < 3 || process.argv.length > 4) {
@@ -11,7 +12,7 @@ if (process.argv.length < 3 || process.argv.length > 4) {
   const isDynamic = process.argv.includes('--dynamic');
   const filename = process.argv[process.argv.length - 1];
   const filePath = path.join(process.cwd(), filename);
-  const contents = fs.readFileSync(filePath).toString();
+  const contents = preprocessor(fs.readFileSync(filePath).toString(), filePath);
   const ast = parser.parseStringToCompletion(contents);
   if (isDynamic) {
     ast.visit(new DynamicCodeGenerator());
