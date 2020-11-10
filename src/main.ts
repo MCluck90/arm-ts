@@ -11,8 +11,16 @@ if (process.argv.length < 3 || process.argv.length > 4) {
 } else {
   const isDynamic = process.argv.includes('--dynamic');
   const filename = process.argv[process.argv.length - 1];
+
+  const runtimePath = path.join(__dirname, './runtime/index.ts');
+  const runtimeContents = preprocessor(
+    fs.readFileSync(runtimePath).toString(),
+    runtimePath
+  );
+
   const filePath = path.join(process.cwd(), filename);
-  const contents = preprocessor(fs.readFileSync(filePath).toString(), filePath);
+  const fileContents = fs.readFileSync(filePath).toString();
+  const contents = `${runtimeContents}${preprocessor(fileContents, filePath)}`;
   const ast = parser.parseStringToCompletion(contents);
   if (isDynamic) {
     ast.visit(new DynamicCodeGenerator());

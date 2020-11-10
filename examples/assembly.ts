@@ -1,12 +1,4 @@
 // @ts-nocheck
-function assert(condition: boolean): void {
-  if (condition) {
-    putchar('.');
-  } else {
-    putchar('X');
-  }
-}
-
 function main() {
   var x = 0;
   assert(x == 0);

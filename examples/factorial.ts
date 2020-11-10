@@ -1,12 +1,4 @@
 // @ts-nocheck
-function assert(condition: boolean) {
-  if (condition) {
-    putchar('.');
-  } else {
-    putchar('F');
-  }
-}
-
 function factorial(n) {
   if (n == 0) {
     return 1;
