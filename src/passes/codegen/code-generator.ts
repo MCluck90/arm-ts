@@ -178,6 +178,9 @@ export class CodeGenerator implements Visitor<void> {
     emit(`${node.name}:`);
     this.functionPrologue(node);
     const visitor = this.setupFunctionEnvironment(node);
+    if (node.name === 'main') {
+      this.visitCall(new Call('GC__init', []));
+    }
     node.body.visit(visitor);
     this.functionEpilogue();
   }

@@ -62,7 +62,7 @@ export class DynamicCodeGenerator implements Visitor<void> {
     const { length } = node.elements;
     emit(`  push {r4, ip}`);
     emit(`  ldr r0, =${4 * (length + 1)}`);
-    emit(`  bl malloc`);
+    emit(`  bl GC__allocate`);
     emit(`  mov r4, r0`);
     emit(`  ldr r0, =${toSmallInteger(length)}`);
     emit(`  str r0, [r4]`);
@@ -223,6 +223,9 @@ export class DynamicCodeGenerator implements Visitor<void> {
     emit(`${node.name}:`);
     this.functionPrologue(node);
     const visitor = this.setupFunctionEnvironment(node);
+    if (node.name === 'main') {
+      this.visitCall(new Call('GC__init', []));
+    }
     node.body.visit(visitor);
     this.functionEpilogue();
   }
@@ -370,6 +373,7 @@ export class DynamicCodeGenerator implements Visitor<void> {
   }
 
   visitProgram(node: Program) {
+    emit('  bl GC__init');
     node.statements.forEach((statement) => statement.visit(this));
   }
 
