@@ -1,4 +1,8 @@
 // @ts-nocheck
+function get41() {
+  return 41;
+}
+
 function assert1234(a, b, c, d) {
   assert(a == 1);
   assert(b == 2);
@@ -140,7 +144,8 @@ function main() {
   }
   putchar(46);
   putchar('.');
-  assert(rand() != 42);
+  putchar(10);
+  assert(get41() != 42);
 
   if (true) {
     assert(true);

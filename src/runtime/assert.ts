@@ -1,9 +1,7 @@
 // @ts-nocheck
 function assert(condition: boolean): void {
-  if (condition) {
-    putchar('.');
-  } else {
-    putchar('F');
-    exit(0);
+  if (!condition) {
+    printStrLn(`Assertion failed.`);
+    exit(1);
   }
 }
