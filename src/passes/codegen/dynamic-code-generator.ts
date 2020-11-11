@@ -131,7 +131,7 @@ export class DynamicCodeGenerator implements Visitor<void> {
 
   visitCall(node: Call) {
     // TODO: Make this smarter
-    const isCFunction = ['putchar'].includes(node.callee);
+    const isCFunction = ['putchar', 'GC__allocate'].includes(node.callee);
     const callee = node.callee === 'exit' ? 'std__exit' : node.callee;
     switch (node.args.length) {
       case 0:

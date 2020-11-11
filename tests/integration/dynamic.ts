@@ -21,5 +21,6 @@ function main() {
   assert(a[1] + 2 == undefined);
   assert(!isBoolean(undefined));
   forStatement();
+  printStrLn(`Success`);
   exit(0);
 }
