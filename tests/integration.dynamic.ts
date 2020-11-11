@@ -1,38 +1,18 @@
+import fs from 'fs';
+import path from 'path';
 import { parser } from '../src/parser';
 import { DynamicCodeGenerator } from '../src/passes/codegen';
+import { preprocessor } from '../src/passes/preprocessor';
 
-const ast = parser.parseStringToCompletion(`
-  function assert(condition) {
-    if (condition) {
-      putchar('.');
-    } else {
-      putchar('F');
-    }
-  }
+const runtimePath = path.join(__dirname, '../src/runtime/index.ts');
+const runtimeContents = preprocessor(
+  fs.readFileSync(runtimePath).toString(),
+  runtimePath
+);
 
-  function isBoolean(x) {
-    if (x == true) {
-      return true;
-    } else if (x == false) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  function forStatement() {
-    for (; undefined; ) {
-      assert(false);
-    }
-    assert(true);
-  }
-
-  function main() {
-    var a = [];
-    assert(a[1] + 2 == undefined);
-    assert(!isBoolean(undefined));
-    forStatement();
-  }
-  `);
+const filePath = path.join(__dirname, './integration/dynamic.ts');
+const fileContents = fs.readFileSync(filePath).toString();
+const contents = `${runtimeContents}${preprocessor(fileContents, filePath)}`;
+const ast = parser.parseStringToCompletion(contents);
 
 ast.visit(new DynamicCodeGenerator());
