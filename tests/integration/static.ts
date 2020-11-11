@@ -1,17 +1,9 @@
 // @ts-nocheck
-function simpleAssert(condition: boolean) {
-  if (condition) {
-    putchar(46);
-  } else {
-    putchar(70);
-  }
-}
-
 function assert1234(a, b, c, d) {
-  simpleAssert(a == 1);
-  simpleAssert(b == 2);
-  simpleAssert(c == 3);
-  simpleAssert(d == 4);
+  assert(a == 1);
+  assert(b == 2);
+  assert(c == 3);
+  assert(d == 4);
 }
 
 function factorial(n) {
@@ -140,26 +132,26 @@ function assembly() {
 }
 
 function main() {
-  simpleAssert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
+  assert(42 == 4 + 2 * (12 - 2) + 3 * (5 + 1));
 
   {
-    simpleAssert(true);
-    simpleAssert(true);
+    assert(true);
+    assert(true);
   }
   putchar(46);
   putchar('.');
-  simpleAssert(rand() != 42);
+  assert(rand() != 42);
 
   if (true) {
-    simpleAssert(true);
+    assert(true);
   } else {
-    simpleAssert(false);
+    assert(false);
   }
 
   if (false) {
-    simpleAssert(false);
+    assert(false);
   } else {
-    simpleAssert(true);
+    assert(true);
   }
 
   assert1234(1, 2, 3, 4);
@@ -182,4 +174,7 @@ function main() {
   strings();
   stringTypes(`test`);
   assembly();
+
+  printStrLn(`Success`);
+  exit(0);
 }

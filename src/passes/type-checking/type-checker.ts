@@ -108,7 +108,9 @@ export class TypeChecker implements Visitor<Type> {
   }
 
   visitCall(node: Call): Type {
-    const expected = this.functions.get(node.callee);
+    const expected = this.functions.get(
+      node.callee === 'exit' ? 'std__exit' : node.callee
+    );
     if (!expected) {
       throw new TypeError(`Function ${node.callee} is not defined`);
     }

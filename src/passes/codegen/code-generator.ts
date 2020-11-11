@@ -102,14 +102,15 @@ export class CodeGenerator implements Visitor<void> {
   }
 
   visitCall(node: Call) {
+    const callee = node.callee === 'exit' ? 'std__exit' : node.callee;
     switch (node.args.length) {
       case 0:
-        emit(`  bl ${node.callee}`);
+        emit(`  bl ${callee}`);
         break;
 
       case 1:
         node.args[0].visit(this);
-        emit(`  bl ${node.callee}`);
+        emit(`  bl ${callee}`);
         break;
 
       case 2:
@@ -121,7 +122,7 @@ export class CodeGenerator implements Visitor<void> {
           emit(`  str r0, [sp, #${4 * i}]`);
         });
         emit(`  pop {r0, r1, r2, r3}`);
-        emit(`  bl ${node.callee}`);
+        emit(`  bl ${callee}`);
         break;
 
       default:

@@ -4,5 +4,6 @@ function assert(condition: boolean): void {
     putchar('.');
   } else {
     putchar('F');
+    exit(0);
   }
 }
