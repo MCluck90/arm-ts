@@ -45,7 +45,7 @@ export class CodeGenerator implements Visitor<void> {
   visitArrayLiteral(node: ArrayLiteral) {
     const { length } = node.elements;
     emit(`  ldr r0, =${4 * (length + 1)}`);
-    emit(`  bl malloc`);
+    emit(`  bl GC__allocate`);
     emit(`  push {r4, ip}`);
     emit(`  mov r4, r0`);
     emit(`  ldr r0, =${length}`);

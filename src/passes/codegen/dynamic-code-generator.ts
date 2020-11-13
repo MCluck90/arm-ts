@@ -374,7 +374,6 @@ export class DynamicCodeGenerator implements Visitor<void> {
   }
 
   visitProgram(node: Program) {
-    emit('  bl GC__init');
     node.statements.forEach((statement) => statement.visit(this));
   }
 

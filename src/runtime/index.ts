@@ -1,7 +1,6 @@
 // @ts-nocheck
 import './globals.ts';
-asm`
-.text
+asm`.text
 `;
 import './exit.ts';
 import './print.ts';
