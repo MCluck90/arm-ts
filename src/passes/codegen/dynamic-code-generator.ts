@@ -62,7 +62,7 @@ export class DynamicCodeGenerator implements Visitor<void> {
     const { length } = node.elements;
     emit(`  push {r4, ip}`);
     emit(`  ldr r0, =${4 * (length + 1)}`);
-    emit(`  bl GC__allocate`);
+    emit(`  bl malloc`);
     emit(`  mov r4, r0`);
     emit(`  ldr r0, =${toSmallInteger(length)}`);
     emit(`  str r0, [r4]`);
@@ -131,7 +131,7 @@ export class DynamicCodeGenerator implements Visitor<void> {
 
   visitCall(node: Call) {
     // TODO: Make this smarter
-    const isCFunction = ['putchar', 'GC__allocate'].includes(node.callee);
+    const isCFunction = ['putchar'].includes(node.callee);
     const callee = node.callee === 'exit' ? 'std__exit' : node.callee;
     switch (node.args.length) {
       case 0:
@@ -224,9 +224,6 @@ export class DynamicCodeGenerator implements Visitor<void> {
     emit(`${node.name}:`);
     this.functionPrologue(node);
     const visitor = this.setupFunctionEnvironment(node);
-    if (node.name === 'main') {
-      this.visitCall(new Call('GC__init', []));
-    }
     node.body.visit(visitor);
     this.functionEpilogue();
   }

@@ -45,7 +45,7 @@ export class CodeGenerator implements Visitor<void> {
   visitArrayLiteral(node: ArrayLiteral) {
     const { length } = node.elements;
     emit(`  ldr r0, =${4 * (length + 1)}`);
-    emit(`  bl GC__allocate`);
+    emit(`  bl malloc`);
     emit(`  push {r4, ip}`);
     emit(`  mov r4, r0`);
     emit(`  ldr r0, =${length}`);
@@ -179,9 +179,6 @@ export class CodeGenerator implements Visitor<void> {
     emit(`${node.name}:`);
     this.functionPrologue(node);
     const visitor = this.setupFunctionEnvironment(node);
-    if (node.name === 'main') {
-      this.visitCall(new Call('GC__init', []));
-    }
     node.body.visit(visitor);
     this.functionEpilogue();
   }
