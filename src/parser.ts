@@ -60,8 +60,6 @@ export class Source {
   }
 }
 
-new Source('', 0).match(/x/y);
-
 export class ParseResult<T> {
   constructor(public value: T, public source: Source) {}
 }
