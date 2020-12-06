@@ -42,119 +42,13 @@ import { Character } from './ast/character';
 import { AST } from './ast';
 import { Boolean } from './ast/boolean';
 
-export class Source {
-  constructor(public string: string, public index: number) {}
+import { constant, error, maybe, Parser, regexp, zeroOrMore } from 'parsnip-ts';
+import { cStyleComment } from 'parsnip-ts/comments';
+import { createToken } from 'parsnip-ts/token';
+import { whitespace } from 'parsnip-ts/whitespace';
 
-  match(regexp: RegExp): ParseResult<string> | null {
-    console.assert(regexp.sticky);
-    regexp.lastIndex = this.index;
-    const match = this.string.match(regexp);
-    if (match) {
-      const value = match[0];
-      const newIndex = this.index + value.length;
-      const source = new Source(this.string, newIndex);
-      return new ParseResult(value, source);
-    }
-
-    return null;
-  }
-}
-
-export class ParseResult<T> {
-  constructor(public value: T, public source: Source) {}
-}
-
-export interface Parser<T> {
-  parse(source: Source): ParseResult<T> | null;
-}
-
-export class Parser<T> {
-  constructor(public parse: (source: Source) => ParseResult<T> | null) {}
-
-  static constant<U>(value: U): Parser<U> {
-    return new Parser((source) => new ParseResult(value, source));
-  }
-
-  static error<U>(message: string): Parser<U> {
-    return new Parser((_source) => {
-      throw new Error(message);
-    });
-  }
-
-  static maybe<U>(parser: Parser<U | null>): Parser<U | null> {
-    return parser.or(constant(null));
-  }
-
-  static regexp(regexp: RegExp): Parser<string> {
-    return new Parser((source) => source.match(regexp));
-  }
-
-  static zeroOrMore<U>(parser: Parser<U>): Parser<U[]> {
-    return new Parser((source) => {
-      const results = [];
-      let item = null;
-      while ((item = parser.parse(source))) {
-        source = item.source;
-        results.push(item.value);
-      }
-      return new ParseResult(results, source);
-    });
-  }
-
-  and<U>(parser: Parser<U>): Parser<U> {
-    return this.bind(() => parser);
-  }
-
-  bind<U>(callback: (value: T) => Parser<U>): Parser<U> {
-    return new Parser((source) => {
-      const result = this.parse(source);
-      if (result) {
-        const { value, source } = result;
-        return callback(value).parse(source);
-      }
-      return null;
-    });
-  }
-
-  map<U>(callback: (t: T) => U): Parser<U> {
-    return this.bind((value) => constant(callback(value)));
-  }
-
-  or<U>(parser: Parser<T | U>): Parser<T | U> {
-    return new Parser((source) => {
-      const result = this.parse(source);
-      if (result) {
-        return result;
-      }
-      return parser.parse(source);
-    });
-  }
-
-  parseStringToCompletion(string: string): T {
-    const source = new Source(string, 0);
-    const result = this.parse(source);
-    if (!result) {
-      throw new Error('Parse error at index 0');
-    }
-
-    const index = result.source.index;
-    if (index !== result.source.string.length) {
-      console.log(result);
-      throw new Error(`Parse error at index ${index}`);
-    }
-
-    return result.value;
-  }
-}
-
-const { constant, maybe, regexp, zeroOrMore } = Parser;
-
-export const whitespace = regexp(/[ \n\r\t]+/y);
-export const comments = regexp(/[/][/].*/y).or(regexp(/[/][*].*[*][/]/sy));
-export const ignored = zeroOrMore(whitespace.or(comments));
-
-const token = (pattern: RegExp) =>
-  regexp(pattern).bind((value) => ignored.and(constant(value)));
+const ignored = cStyleComment.or(whitespace);
+const token = createToken(ignored);
 
 // Keywords
 export const ARRAY = token(/Array\b/y);
@@ -192,7 +86,7 @@ export const INTEGER = token(/[0-9]+/y).map(
   (digits) => new Integer(parseInt(digits))
 );
 
-export const arrayType: Parser<Type> = Parser.error(
+export const arrayType: Parser<Type> = error(
   'arrayType parser used before definition'
 );
 
@@ -236,7 +130,7 @@ export const STAR = token(/[*]/y).map(() => Multiply);
 export const SLASH = token(/[/]/y).map(() => Divide);
 export const ASSIGN = token(/=/y).map(() => Assign);
 
-export const expression: Parser<AST> = Parser.error(
+export const expression: Parser<AST> = error(
   'expression parser used before definition'
 );
 
@@ -331,7 +225,7 @@ export const comparision = infix(
 
 expression.parse = comparision.parse;
 
-export const statement: Parser<AST> = Parser.error(
+export const statement: Parser<AST> = error(
   'statement parser used before definition'
 );
 
@@ -436,6 +330,6 @@ export const statementParser = returnStatement
 
 statement.parse = statementParser.parse;
 
-export const parser = ignored
+export const parser = zeroOrMore(ignored)
   .and(zeroOrMore(statement))
   .map((statements) => new Program(statements));

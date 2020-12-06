@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { ParseError } from 'parsnip-ts/error';
 import path from 'path';
 import { parser } from './parser';
 import { CodeGenerator, DynamicCodeGenerator } from './passes/codegen';
@@ -21,7 +22,11 @@ if (process.argv.length < 3 || process.argv.length > 4) {
   const filePath = path.join(process.cwd(), filename);
   const fileContents = fs.readFileSync(filePath).toString();
   const contents = `${runtimeContents}${preprocessor(fileContents, filePath)}`;
-  const ast = parser.parseStringToCompletion(contents);
+  const ast = parser.parseToEnd(contents);
+  if (ast instanceof ParseError) {
+    throw ast;
+  }
+
   if (isDynamic) {
     ast.visit(new DynamicCodeGenerator());
   } else {

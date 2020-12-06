@@ -1,3 +1,4 @@
+import { ParseError } from 'parsnip-ts/error';
 import {
   Add,
   ArrayLiteral,
@@ -35,66 +36,13 @@ import {
   VoidType,
   While,
 } from '../src/ast';
-import { comments, ignored, Parser, parser, whitespace } from '../src/parser';
+import { parser } from '../src/parser';
 
-const { constant, regexp } = Parser;
-
-test('Parsing alternatives with `or`', () => {
-  const parser = regexp(/bye/y).or(regexp(/hai/y));
-  const result = parser.parseStringToCompletion('hai');
-  expect(result).toBe('hai');
-});
-
-test('Parsing with bindings', () => {
-  const parser = regexp(/[a-z]+/y).bind((word) =>
-    regexp(/[0-9]+/y).bind((digits) =>
-      constant(`first ${word}, then ${digits}`)
-    )
-  );
-  const result = parser.parseStringToCompletion('hai123');
-  expect(result).toBe('first hai, then 123');
-});
-
-test('whitespace', () => {
-  const acceptableCharacters = [' ', '\r', '\n', '\t'];
-  for (const char of acceptableCharacters) {
-    const result = whitespace.parseStringToCompletion(char);
-    expect(result).toBe(char);
+function assertSuccessfulParse<T>(result: T | ParseError): asserts result is T {
+  if (result instanceof ParseError) {
+    throw result;
   }
-
-  const charactersInSequence = '\r\n\t \t\n\r';
-  let result = whitespace.parseStringToCompletion(charactersInSequence);
-  expect(result).toBe(charactersInSequence);
-
-  expect(() => whitespace.parseStringToCompletion('abc')).toThrowError();
-});
-
-test('comments', () => {
-  const singleLineComment = '// comment';
-  let result = comments.parseStringToCompletion(singleLineComment);
-  expect(result).toBe(singleLineComment);
-
-  const multilineComment = `/*
-    comment
-    goes
-    here
-  */`;
-  result = comments.parseStringToCompletion(multilineComment);
-  expect(result).toBe(multilineComment);
-  expect(() =>
-    comments.parseStringToCompletion('not a comment')
-  ).toThrowError();
-});
-
-test('ignored', () => {
-  const input = `
-  // a combination of random whitespace
-  \t/* and comments */
-  \t\r// another comment
-  `;
-  const result = ignored.parseStringToCompletion(input);
-  expect(result.join('')).toBe(input);
-});
+}
 
 test('Can parse factorial function', () => {
   const source = `
@@ -124,7 +72,8 @@ test('Can parse factorial function', () => {
       ])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -154,7 +103,8 @@ test('Can parse a character', () => {
       ])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -174,7 +124,8 @@ test('Can chain assignments', () => {
       ])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -193,7 +144,8 @@ test('Can parse booleans', () => {
       new Block([new Boolean(true), new Boolean(false)])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -211,7 +163,8 @@ test('Can parse undefined', () => {
       new Block([new Undefined()])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -228,7 +181,8 @@ test('Can parse arrays', () => {
     ),
     new ArrayLookup(new Id('a'), new Integer(1)),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -283,7 +237,8 @@ test('Can parse type annotations in function signatures', () => {
       new Block([])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -308,7 +263,8 @@ test('Can parse comparison operators', () => {
       new Boolean(true)
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -352,7 +308,8 @@ test('Can parse if statements', () => {
       )
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -363,7 +320,8 @@ test('Can parse the built-in `length` function', () => {
   `;
   const expected = new Program([new Length(new Integer(1))]);
 
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -384,7 +342,8 @@ test('Can parse `for` statements', () => {
       new Block([new Call('putchar', [new Id('i')])])
     ),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -404,7 +363,8 @@ multiline
     new String(''),
     new String('\nmultiline\n'),
   ]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
@@ -414,7 +374,8 @@ test('Can parse assembly directives', () => {
     asm\`add r0, r0, #1\`;
   `;
   const expected = new Program([new Asm('add r0, r0, #1')]);
-  const result = parser.parseStringToCompletion(source);
+  const result = parser.parseToEnd(source);
+  assertSuccessfulParse(result);
   expect(result).toEqual(expected);
   expect(result.equals(expected)).toBe(true);
 });
